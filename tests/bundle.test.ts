@@ -17,6 +17,9 @@ import { join } from 'node:path';
 
 const ROOT = join(__dirname, '..');
 const DEMO = readFileSync(join(ROOT, 'public', 'demo.html'), 'utf8');
+// demo.html loads this externally; jsdom will not fetch it, so the tests
+// evaluate it themselves to reproduce what a browser does.
+const DEMO_JS = readFileSync(join(ROOT, 'public', 'demo.js'), 'utf8');
 
 const TARGETS = ['chrome', 'firefox'] as const;
 
@@ -52,16 +55,19 @@ interface Mounted {
   field(id: string): HTMLInputElement;
 }
 
-function open(html: string, url: string, runPageScripts: boolean): TestWindow {
+function open(html: string, url: string, withPageScript: boolean): TestWindow {
   const dom = new JSDOM(html, {
     url,
-    runScripts: runPageScripts ? 'dangerously' : 'outside-only',
+    // 'outside-only' still provides window.eval, which is all that is needed
+    // now that the page's own script is an external file.
+    runScripts: 'outside-only',
     pretendToBeVisual: true,
   });
   const w = dom.window as unknown as TestWindow;
   // Cast at the assignment: the ambient `chrome` global from @types/chrome
   // describes the whole API surface, and this stub is only the used slice.
   (w as unknown as { chrome: unknown }).chrome = fakeExtensionApi();
+  if (withPageScript) w.eval(DEMO_JS);
   return w;
 }
 
