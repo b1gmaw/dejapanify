@@ -82,19 +82,22 @@ Firefox 140+, and 142+ on Android.
 
 ## Microsoft Edge Add-ons (free)
 
-1. Register at https://partner.microsoft.com/dashboard/microsoftedge/public/login
-   — free, no fee. You need a Microsoft account; **your GitHub account can
-   create one**, which is the quickest route. Choose an **Individual** account
-   (verification is faster than a company account).
-2. Wait for account verification, then **Create new extension**.
-3. Upload `dejapanify-<version>-chrome.zip` (Edge takes the Chromium package).
-4. Fill in the listing from `listing.md`.
-5. Upload `store-logo-300.png` as the store logo and the four screenshots.
-6. Set the privacy policy URL, and work through the Privacy section using the
-   pre-filled answers in `listing.md` — every one is **No**. Partner Center also
-   asks whether the extension uses remote code: it does not, everything executed
-   ships inside the package.
-7. Submit for certification.
+**→ [`EDGE.md`](EDGE.md)** — the full packet, following Partner Center's own
+eight-step flow, with every Privacy-page answer pre-written.
+
+In short: register at
+https://partner.microsoft.com/dashboard/microsoftedge/public/login (free; your
+GitHub account can create the required Microsoft account), upload
+`dejapanify-<version>-chrome.zip`, and paste the answers from `EDGE.md`.
+
+Two things in there are easy to get wrong and worth knowing before you start:
+
+- **Load the package in Edge yourself first.** Certification takes up to seven
+  business days to report a problem that a two-minute local check would catch.
+- **Fill in the "Notes for certification" box.** The extension does nothing on
+  non-Japanese pages by design, so a tester on an ordinary English page will
+  correctly see no effect at all. `EDGE.md` has text giving them an exact route
+  to a visible conversion.
 
 ---
 
