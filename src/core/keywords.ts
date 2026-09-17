@@ -92,13 +92,45 @@ export const INPUT_TYPE_MAP: Readonly<Partial<Record<string, FieldKind>>> = {
   decimal: 'digits-half',
 };
 
+/** A term made only of latin letters, digits and the usual field-name joiners. */
+const LATIN_TERM = /^[a-z0-9][a-z0-9_-]*$/i;
+
+const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const boundaryCache = new Map<string, RegExp>();
+
+/**
+ * Latin terms must match as whole words, not as fragments of longer ones.
+ *
+ * Plain substring matching classified a free-text 「お問い合わせ内容」 textarea on
+ * a real government form as a numeric field, because its name was
+ * "your-message" and "age" is a keyword. The extension would then have run
+ * hyphen normalization over the message and turned コーヒー into コ-ヒ-.
+ *
+ * The lookahead stops at letters but allows digits, because Japanese forms
+ * routinely number split fields: tel1/tel2/tel3, zip1/zip2, kana1.
+ */
+function latinBoundary(term: string): RegExp {
+  let re = boundaryCache.get(term);
+  if (!re) {
+    re = new RegExp(`(?<![a-z0-9])${escapeRegExp(term)}(?![a-z])`, 'i');
+    boundaryCache.set(term, re);
+  }
+  return re;
+}
+
+function termMatches(term: string, lower: string): boolean {
+  // Japanese is written without word separators, so substring matching is the
+  // only option there -- and is correct, since these terms are distinctive.
+  return LATIN_TERM.test(term) ? latinBoundary(term).test(lower) : lower.includes(term.toLowerCase());
+}
+
 export function matchKeywords(haystack: string): { kind: FieldKind; confidence: number; evidence: string } | null {
   const lower = haystack.toLowerCase();
   for (const rule of KEYWORD_RULES) {
     for (const term of rule.terms) {
       if (typeof term === 'string') {
-        const needle = term.toLowerCase();
-        if (lower.includes(needle)) {
+        if (termMatches(term, lower)) {
           return { kind: rule.kind, confidence: rule.confidence, evidence: `matched "${term}"` };
         }
       } else if (term.test(lower)) {

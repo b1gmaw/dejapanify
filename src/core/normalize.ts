@@ -23,6 +23,15 @@ import type { FieldKind, NormalizeOptions } from './types.js';
 import { DEFAULT_NORMALIZE_OPTIONS } from './types.js';
 
 /**
+ * Japanese letters: hiragana, katakana proper, kanji, and half-width katakana.
+ *
+ * Deliberately excludes the prolonged sound mark ー (U+30FC), which sits just
+ * outside the katakana letter range, because it legitimately appears in phone
+ * numbers typed with an IME and must still be normalized to a hyphen there.
+ */
+const JAPANESE_LETTER = /[\u3041-\u3096\u30A1-\u30FA\u4E00-\u9FFF\uFF66-\uFF9F]/;
+
+/**
  * Convert `value` into the form `kind` requires.
  *
  * The transforms are deliberately conservative: a kana field converts kana and
@@ -63,6 +72,11 @@ export function normalizeValue(
       break;
     }
     case 'digits-half': {
+      // Refuse to touch prose. A numeric field never legitimately contains
+      // kana or kanji, so their presence means the field was misidentified --
+      // and hyphen normalization would wreck the text, turning コーヒー into
+      // コ-ヒ-. Doing nothing is always the safer failure here.
+      if (JAPANESE_LETTER.test(out)) return value;
       out = digitsToHalfWidth(out);
       out = normalizeHyphen(out);
       out = spacesToHalfWidth(out);
@@ -70,13 +84,16 @@ export function normalizeValue(
       break;
     }
     case 'digits-full': {
+      if (JAPANESE_LETTER.test(out)) return value;
       out = digitsToFullWidth(out);
       break;
     }
     case 'alnum-half':
     case 'text-half': {
+      // Only ASCII width is touched. Narrowing kana here was actively harmful:
+      // a field asking for 半角英数字 is not made valid by turning コーヒー into
+      // ｺｰﾋｰ, and on a misidentified field it mangles ordinary Japanese.
       out = toHalfWidthAscii(out);
-      if (kind === 'alnum-half') out = kanaToHalfWidth(out);
       break;
     }
     case 'alnum-full':

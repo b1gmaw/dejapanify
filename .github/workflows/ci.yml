@@ -43,3 +43,31 @@ jobs:
         with:
           name: dejapanify-dist
           path: dist/
+
+  e2e:
+    name: Real browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Confirm Firefox is available
+        run: firefox --version
+
+      # Installs the built extension into a real headless Firefox and has the
+      # demo page report its own conversion results back. This is the check
+      # that catches an extension which builds and unit-tests cleanly but
+      # converts nothing in an actual browser.
+      #
+      # --http-only on purpose: browsers refuse to inject content scripts into
+      # file:// pages, so that case is informational and would sit permanently
+      # red in CI.
+      - name: End-to-end conversion check
+        run: npm run e2e -- --http-only
+        timeout-minutes: 5

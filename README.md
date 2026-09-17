@@ -162,7 +162,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 154 tests
+npm test           # 182 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
@@ -171,6 +171,7 @@ npm run assets     # regenerate the store listing images
 npm run site       # build the GitHub Pages site into docs/
 npm run demo       # serve the test form over http
 npm run e2e        # load the built extension into a real Firefox and verify it
+node scripts/inspect.mjs <url>   # what the detector makes of a real page
 ```
 
 `npm run e2e` is the one that answers "does this actually work": it installs the
@@ -229,8 +230,22 @@ Width conversion is the first module. Other Japanese-web friction worth fixing:
 
 Site-specific reports are the most useful contribution. If a field is missed or
 converted wrongly, open an issue with the URL, the field's label, and what you
-expected. Enable **Debug logging** in settings to get the detection decision
-printed to the page console.
+expected.
+
+Two things make such a report easy to act on:
+
+```bash
+node scripts/inspect.mjs https://example.co.jp/form
+```
+
+This prints every field on a page with the kind that was detected, the
+confidence, and which signals fired — no install required, and it runs the same
+detector the extension does. Enabling **Debug logging** in the extension's
+settings prints the same decisions to the page console.
+
+A false positive — something converted that should have been left alone — is
+more serious than a miss, since it changes text the user typed. Those are worth
+reporting even if the field is obscure.
 
 ## License
 

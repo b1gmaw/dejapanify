@@ -118,3 +118,70 @@ describe('safety: fields we must not touch', () => {
     expect(d?.stripSeparators).toBe(false);
   });
 });
+
+describe('regressions found by auditing real Japanese sites', () => {
+  // Patterns below are reproduced from real pages, written out here rather
+  // than copied, so the repo carries no third-party markup.
+
+  it('does not treat a free-text 問い合わせ textarea as a numeric field', () => {
+    // Found on a real government contact form: the field was named
+    // "your-message", and "age" matched inside "message", so the extension
+    // would have run hyphen normalization over the user's prose.
+    const d = detectField({
+      type: 'textarea',
+      name: 'your-message',
+      labelText: 'お問い合わせ内容必須',
+    });
+    expect(d === null || d.kind !== 'digits-half').toBe(true);
+  });
+
+  it.each(['message', 'your-message', 'messages', 'page', 'usage', 'package', 'language'])(
+    'does not match the "age" keyword inside %s',
+    (name) => {
+      const d = detectField({ name });
+      expect(d === null || d.kind !== 'digits-half').toBe(true);
+    },
+  );
+
+  it('still detects a standalone age field', () => {
+    expect(detectField({ name: 'age' })?.kind).toBe('digits-half');
+    expect(detectField({ name: 'user_age' })?.kind).toBe('digits-half');
+  });
+
+  it.each(['tel1', 'tel2', 'tel3', 'zip1', 'zip2'])(
+    'still detects numbered split field %s',
+    (name) => {
+      // Japanese forms split phone and postal codes across numbered inputs,
+      // so a word boundary must not stop at a trailing digit.
+      expect(detectField({ name })?.kind).toBe('digits-half');
+    },
+  );
+
+  it('detects a bare zip field, as on the Japan Post search form', () => {
+    const d = detectField({ name: 'zip' });
+    expect(d?.kind).toBe('digits-half');
+    expect(d!.confidence).toBeGreaterThanOrEqual(DEFAULT_SETTINGS.minConfidence);
+  });
+
+  it.each(['hotel_name', 'client_name', 'title'])('does not match "tel" inside %s', (name) => {
+    const d = detectField({ name });
+    expect(d === null || d.kind !== 'digits-half').toBe(true);
+  });
+
+  it('does not read kanagawa as a kana field', () => {
+    const d = detectField({ name: 'kanagawa', labelText: '神奈川' });
+    expect(d === null || d.kind !== 'katakana-full').toBe(true);
+  });
+
+  it('still detects numbered kana fields', () => {
+    expect(detectField({ name: 'kana1' })?.kind).toBe('katakana-full');
+    expect(detectField({ name: 'name_kana' })?.kind).toBe('katakana-full');
+  });
+
+  it('ignores the hidden bookkeeping fields form plugins add', () => {
+    for (const name of ['_wpcf7', '_wpcf7_version', '_wpcf7_unit_tag', 'cx', 'cof', 'ie']) {
+      const d = detectField({ name });
+      expect(d === null || d.confidence < DEFAULT_SETTINGS.minConfidence).toBe(true);
+    }
+  });
+});

@@ -81,3 +81,35 @@ describe('needsNormalization', () => {
     expect(normalizeValue('山田', 'katakana-full')).toBe('山田');
   });
 });
+
+describe('refusing to damage Japanese text', () => {
+  it.each([
+    'コーヒーを１杯',
+    'データーベースの件',
+    'お問い合わせ：全角スペース　あり',
+    '山田さんへ　ご連絡ください',
+  ])('leaves %s untouched in a numeric field', (text) => {
+    // If a numeric field contains kana or kanji it was misidentified, and
+    // hyphen normalization would turn コーヒー into コ-ヒ-. Do nothing instead.
+    expect(normalizeValue(text, 'digits-half')).toBe(text);
+    expect(normalizeValue(text, 'digits-full')).toBe(text);
+  });
+
+  it('still normalizes a phone number typed with a prolonged sound mark', () => {
+    // ー sits outside the katakana letter range, so the guard must not catch it.
+    expect(normalizeValue('０３ー１２３４', 'digits-half')).toBe('03-1234');
+    expect(normalizeValue('090ー1234ー5678', 'digits-half', { stripSeparators: true }))
+      .toBe('09012345678');
+  });
+
+  it('does not narrow kana in a half-width alphanumeric field', () => {
+    // Turning コーヒー into ｺｰﾋｰ never makes a 半角英数字 field valid, and
+    // mangles ordinary Japanese when the field was misread.
+    expect(normalizeValue('コーヒー', 'alnum-half')).toBe('コーヒー');
+    expect(normalizeValue('ＡＢＣ　コーヒー', 'alnum-half')).toBe('ABC コーヒー');
+  });
+
+  it('still narrows kana when the field explicitly asks for 半角カタカナ', () => {
+    expect(normalizeValue('コーヒー', 'katakana-half')).toBe('ｺｰﾋｰ');
+  });
+});
