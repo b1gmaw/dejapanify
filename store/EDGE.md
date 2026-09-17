@@ -61,43 +61,32 @@ Changing either means editing `scripts/build.mjs`, rebuilding and re-uploading.
 
 ### Single Purpose Description
 
-> dejapanify converts text typed into Japanese web forms between half-width
-> (半角) and full-width (全角) character forms, so that a field which accepts only
-> one of them does not reject input that is otherwise correct. It reads each
-> field's own attributes and the instructions printed beside it to determine
-> which form that field requires, and rewrites the value accordingly when the
-> user leaves the field. It does nothing else.
+```
+dejapanify converts text typed into Japanese web forms between half-width (半角) and full-width (全角) character forms, so that a field which accepts only one of them does not reject input that is otherwise correct. It reads each field's own attributes and the instructions printed beside it to determine which form that field requires, and rewrites the value accordingly when the user leaves the field. It does nothing else.
+```
 
 ### Permission justification
 
 **`storage`** — the only permission requested:
 
-> Stores the user's own preferences: which conversion types are enabled, the
-> confidence threshold before a field is converted, whether the undo notice is
-> shown, and per-site enable/disable lists. No personal data is stored, and
-> nothing derived from page content is stored.
+```
+Stores the user's own preferences: which conversion types are enabled, the confidence threshold before a field is converted, whether the undo notice is shown, and per-site enable/disable lists. No personal data is stored, and nothing derived from page content is stored.
+```
 
 **Content script host access** (the extension's content script matches all
 sites):
 
-> Japanese web forms are not confined to a single domain or top-level domain, so
-> the extension cannot know in advance which pages contain them. The content
-> script takes no action unless the page is identified as Japanese and a field's
-> own attributes or printed instructions identify the character width it
-> requires. It reads and rewrites only form field values, in page memory, at the
-> moment the user leaves a field. It makes no network requests and transmits
-> nothing. The extension declares no host permissions beyond the content script
-> itself, and has no background script.
+```
+Japanese web forms are not confined to a single domain or top-level domain, so the extension cannot know in advance which pages contain them. The content script takes no action unless the page is identified as Japanese and a field's own attributes or printed instructions identify the character width it requires. It reads and rewrites only form field values, in page memory, at the moment the user leaves a field. It makes no network requests and transmits nothing. The extension declares no host permissions beyond the content script itself, and has no background script.
+```
 
 ### Are you using remote code?
 
 **No, I am not using remote code.**
 
-> All executed code ships inside the package. There are no remotely hosted
-> scripts, no `eval`, and no dynamically loaded modules. The build embeds no
-> third-party runtime dependencies — `package.json` declares none — and the test
-> suite (`tests/privacy.test.ts`) scans the built package on every build and
-> fails if a network primitive appears.
+```
+All executed code ships inside the package. There are no remotely hosted scripts, no `eval`, and no dynamically loaded modules. The build embeds no third-party runtime dependencies — `package.json` declares none — and the test suite (`tests/privacy.test.ts`) scans the built package on every build and fails if a network primitive appears.
+```
 
 ### Data usage
 
@@ -142,9 +131,15 @@ Regenerate with `npm run assets` if they are missing.
 
 ### Description
 
-Use the **full description** from [`listing.md`](listing.md) — English for the
-en-US listing, 日本語 for the ja listing. Both are well over Edge's 250-character
-minimum.
+Copy from [`listing.md`](listing.md) → **Full description**, which holds both
+languages in fenced blocks:
+
+- **en-US listing** → the block under `**English:**` (2,220 characters)
+- **ja listing** → the block under `**日本語:**` (1,135 characters)
+
+Both clear Edge's 250-character minimum with room to spare. They live in
+`listing.md` rather than being repeated here so the two stores cannot drift
+apart.
 
 ### Search terms
 
