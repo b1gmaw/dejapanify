@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Build and package
+        run: |
+          npm run build
+          npm run lint:ext
+          npm run package
+
+      - name: Confirm the build is reproducible
+        run: |
+          sha256sum web-ext-artifacts/*.zip > first.txt
+          npm run package
+          sha256sum web-ext-artifacts/*.zip > second.txt
+          diff first.txt second.txt || {
+            echo "::error::build is not reproducible - add-on review depends on it"
+            exit 1
+          }
+          cat second.txt
+
+      - name: Source archive for add-on review
+        run: npm run source-archive
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: web-ext-artifacts/*.zip
+          generate_release_notes: true
+          body: |
+            Install links and a live demo: https://b1gmaw.github.io/dejapanify/
+
+            | File | For |
+            |---|---|
+            | `dejapanify-*-firefox.zip` | Firefox |
+            | `dejapanify-*-chrome.zip` | Chrome, Edge, Brave, Vivaldi, Opera |
+            | `source.zip` | Add-on reviewers (see `docs/REVIEWER_NOTES.md`) |
+
+            **Chrome, Brave, Vivaldi, Opera:** unzip the chrome package, open
+            `chrome://extensions`, enable Developer mode, then Load unpacked.
+
+  pages:
+    runs-on: ubuntu-latest
+    needs: release
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deploy
+        uses: actions/deploy-pages@v4
