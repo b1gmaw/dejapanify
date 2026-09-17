@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build both targets
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          for target in chrome firefox; do
+            for file in manifest.json content.js popup/popup.html options/options.html icons/icon128.png; do
+              test -f "dist/$target/$file" || { echo "missing dist/$target/$file"; exit 1; }
+            done
+          done
+          echo "both targets complete"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dejapanify-dist
+          path: dist/

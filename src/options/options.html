@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dejapanify settings</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<main>
+  <h1>dejapanify</h1>
+  <p class="lede">Fixes the half-width / full-width (半角・全角) guessing game on Japanese web forms.</p>
+
+  <section>
+    <h2>Behaviour</h2>
+    <label class="check"><input type="checkbox" id="enabled"><span><strong>Enabled</strong><em>Master switch.</em></span></label>
+    <label class="check"><input type="checkbox" id="japaneseOnly"><span><strong>Japanese pages only</strong><em>Skip pages that are not in Japanese. Recommended.</em></span></label>
+    <label class="check"><input type="checkbox" id="showIndicator"><span><strong>Show the undo chip</strong><em>Display a small notice with an undo button after converting.</em></span></label>
+    <label class="check"><input type="checkbox" id="convertOnInput"><span><strong>Convert while typing</strong><em>Convert after each IME commit instead of waiting for you to leave the field. Faster, but can interfere with multi-segment IME editing.</em></span></label>
+    <label class="check"><input type="checkbox" id="debug"><span><strong>Debug logging</strong><em>Log every detection decision to the page console.</em></span></label>
+  </section>
+
+  <section>
+    <h2>Confidence threshold</h2>
+    <p class="hint">How certain the extension must be before touching a field. Lower catches more fields but risks converting the wrong one.</p>
+    <div class="slider-row">
+      <input type="range" id="minConfidence" min="0.3" max="0.95" step="0.05">
+      <output id="minConfidenceOut">0.50</output>
+    </div>
+  </section>
+
+  <section>
+    <h2>Conversion types</h2>
+    <p class="hint">Turn off any conversion you do not want applied.</p>
+    <div id="kinds" class="kinds"></div>
+  </section>
+
+  <section>
+    <h2>Sites</h2>
+    <label class="field">
+      <span>Never run on these hosts</span>
+      <textarea id="blocklist" rows="4" placeholder="example.co.jp&#10;shop.example.jp"></textarea>
+    </label>
+    <label class="field">
+      <span>Always run on these hosts (even if not detected as Japanese)</span>
+      <textarea id="allowlist" rows="4" placeholder="intranet.example.com"></textarea>
+    </label>
+    <p class="hint">One host per line. A host also covers its subdomains.</p>
+  </section>
+
+  <footer>
+    <button type="button" id="save">Save</button>
+    <button type="button" id="reset" class="ghost">Reset to defaults</button>
+    <span id="saved" class="saved"></span>
+  </footer>
+</main>
+<script src="options.js" type="module"></script>
+</body>
+</html>

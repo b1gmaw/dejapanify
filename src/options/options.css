@@ -1,0 +1,38 @@
+:root {
+  --bg: #ffffff; --fg: #111827; --muted: #6b7280;
+  --line: #e5e7eb; --accent: #4f46e5; --surface: #f9fafb;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0f172a; --fg: #f1f5f9; --muted: #94a3b8; --line: #334155; --accent: #818cf8; --surface: #1e293b; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 32px 20px; background: var(--bg); color: var(--fg);
+  font: 14px/1.6 system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+}
+main { max-width: 640px; margin: 0 auto; }
+h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+.lede { margin: 4px 0 28px; color: var(--muted); }
+section { margin-bottom: 30px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; }
+.hint { color: var(--muted); font-size: 12.5px; margin: -4px 0 12px; }
+.check { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; cursor: pointer; }
+.check input { margin-top: 4px; flex: none; }
+.check span { display: flex; flex-direction: column; }
+.check em { font-style: normal; color: var(--muted); font-size: 12.5px; }
+.slider-row { display: flex; align-items: center; gap: 12px; }
+.slider-row input { flex: 1; }
+output { font-variant-numeric: tabular-nums; min-width: 3ch; }
+.kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+.kinds label { display: flex; gap: 8px; align-items: center; padding: 8px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; cursor: pointer; font-size: 13px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+textarea {
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--surface); color: var(--fg); resize: vertical;
+}
+footer { display: flex; align-items: center; gap: 10px; }
+button { font: inherit; padding: 8px 16px; border-radius: 7px; border: 1px solid transparent; background: var(--accent); color: #fff; cursor: pointer; }
+button.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+button:hover { filter: brightness(1.08); }
+.saved { color: #16a34a; font-size: 13px; }

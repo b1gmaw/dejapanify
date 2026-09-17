@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dejapanify — テストフォーム</title>
+<style>
+  :root { --line:#e5e7eb; --muted:#6b7280; --accent:#4f46e5; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:32px 20px; background:#f9fafb; color:#111827;
+         font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+  main { max-width:680px; margin:0 auto; background:#fff; border:1px solid var(--line);
+         border-radius:12px; padding:28px; }
+  h1 { margin:0 0 4px; font-size:20px; }
+  .lede { color:var(--muted); margin:0 0 24px; font-size:13px; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; vertical-align:top; padding:14px 12px 14px 0; width:34%;
+       font-weight:600; border-bottom:1px solid var(--line); }
+  td { padding:14px 0; border-bottom:1px solid var(--line); }
+  input { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:6px;
+          font:inherit; }
+  .note { display:block; color:var(--muted); font-size:12px; margin-top:4px; }
+  .req { color:#dc2626; font-size:11px; margin-left:4px; }
+  .seed { background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:12px 14px;
+          margin-bottom:20px; font-size:13px; }
+  .seed button { font:inherit; padding:6px 12px; border:0; border-radius:6px;
+                 background:var(--accent); color:#fff; cursor:pointer; margin-top:8px; }
+  .tel { display:flex; gap:8px; align-items:center; }
+  footer { margin-top:20px; }
+  footer button { font:inherit; padding:10px 20px; border:0; border-radius:8px;
+                  background:var(--accent); color:#fff; cursor:pointer; }
+  #result { margin-top:14px; padding:12px; background:#f3f4f6; border-radius:8px;
+            font:12px/1.6 ui-monospace,Menlo,monospace; white-space:pre-wrap; display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>お申し込みフォーム</h1>
+  <p class="lede">dejapanify のテスト用フォームです。各フィールドは実際の日本のサイトでよくあるパターンを再現しています。</p>
+
+  <div class="seed">
+    「わざと間違った幅」で入力欄を埋めます。フォーカスを外す（Tab キー）と自動変換されます。
+    <br><button type="button" id="seed">サンプル入力を挿入</button>
+  </div>
+
+  <form id="form">
+  <table>
+    <tr>
+      <th>お名前<span class="req">必須</span></th>
+      <td><input type="text" name="name" id="name" autocomplete="name" placeholder="山田 太郎"></td>
+    </tr>
+    <tr>
+      <th>フリガナ<span class="req">必須</span></th>
+      <td>
+        <input type="text" name="name_kana" id="name_kana" placeholder="ヤマダ タロウ">
+        <span class="note">全角カタカナでご入力ください</span>
+      </td>
+    </tr>
+    <tr>
+      <th>ふりがな</th>
+      <td>
+        <input type="text" name="name_hira" id="name_hira" placeholder="やまだ たろう">
+        <span class="note">全角ひらがなでご入力ください</span>
+      </td>
+    </tr>
+    <tr>
+      <th>郵便番号</th>
+      <td>
+        <input type="text" name="zip" id="zip" pattern="^[0-9]{7}$" maxlength="7" placeholder="1500001">
+        <span class="note">半角数字7桁・ハイフンなしでご入力ください</span>
+      </td>
+    </tr>
+    <tr>
+      <th>電話番号</th>
+      <td>
+        <div class="tel">
+          <input type="tel" name="tel1" id="tel1" autocomplete="tel-area-code" maxlength="4" style="width:80px">
+          <span>-</span>
+          <input type="tel" name="tel2" id="tel2" maxlength="4" style="width:80px">
+          <span>-</span>
+          <input type="tel" name="tel3" id="tel3" maxlength="4" style="width:80px">
+        </div>
+        <span class="note">半角数字でご入力ください</span>
+      </td>
+    </tr>
+    <tr>
+      <th>ご住所</th>
+      <td>
+        <input type="text" name="address" id="address" autocomplete="street-address">
+        <span class="note">全角で入力してください</span>
+      </td>
+    </tr>
+    <tr>
+      <th>メールアドレス</th>
+      <td>
+        <input type="email" name="email" id="email" autocomplete="email" placeholder="example@example.co.jp">
+        <span class="note">半角英数字でご入力ください</span>
+      </td>
+    </tr>
+    <tr>
+      <th>会員ID</th>
+      <td>
+        <input type="text" name="member_id" id="member_id" pattern="^[A-Za-z0-9]+$">
+        <span class="note">半角英数字</span>
+      </td>
+    </tr>
+    <tr>
+      <th>振込名義</th>
+      <td>
+        <input type="text" name="furikomi" id="furikomi">
+        <span class="note">半角カタカナでご入力ください（銀行システムの都合により）</span>
+      </td>
+    </tr>
+    <tr>
+      <th>パスワード</th>
+      <td>
+        <input type="password" name="password" id="password">
+        <span class="note">半角英数字 — このフィールドは変換されません</span>
+      </td>
+    </tr>
+  </table>
+
+  <footer>
+    <button type="submit">確認画面へ進む</button>
+  </footer>
+  </form>
+
+  <div id="result"></div>
+</main>
+
+<script>
+  // Deliberately wrong widths, matching what an IME actually produces.
+  const SAMPLES = {
+    name: 'ﾔﾏﾀﾞ ﾀﾛｳ',
+    name_kana: 'やまだ たろう',
+    name_hira: 'ヤマダ タロウ',
+    zip: '１５０－０００１',
+    tel1: '０３',
+    tel2: '１２３４',
+    tel3: '５６７８',
+    address: 'Tokyo-to Shibuya-ku 1-2-3',
+    email: 'ｅｘａｍｐｌｅ＠ｅｘａｍｐｌｅ．ｃｏ．ｊｐ',
+    member_id: 'ＡＢＣ１２３４',
+    furikomi: 'ヤマダタロウ',
+    password: 'ＳｅｃｒｅｔＰａｓｓ１',
+  };
+
+  document.getElementById('seed').addEventListener('click', () => {
+    for (const [id, value] of Object.entries(SAMPLES)) {
+      const el = document.getElementById(id);
+      if (el) el.value = value;
+    }
+    document.getElementById('result').style.display = 'none';
+  });
+
+  document.getElementById('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const out = [];
+    for (const id of Object.keys(SAMPLES)) {
+      const el = document.getElementById(id);
+      if (el) out.push(`${id.padEnd(12)} = ${JSON.stringify(el.value)}`);
+    }
+    const result = document.getElementById('result');
+    result.textContent = '送信値:\n' + out.join('\n');
+    result.style.display = 'block';
+  });
+</script>
+</body>
+</html>
