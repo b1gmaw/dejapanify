@@ -44,7 +44,7 @@ jobs:
           cat second.txt
 
       - name: Source archive for add-on review
-        run: git archive --format=zip -o web-ext-artifacts/source.zip HEAD
+        run: npm run source-archive
 
       - name: Publish release
         uses: softprops/action-gh-release@v2

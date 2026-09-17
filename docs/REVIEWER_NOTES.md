@@ -7,6 +7,12 @@ steps below reproduce them **byte for byte** from the submitted source.
 
 [esbuild]: https://esbuild.github.io/
 
+> **There is no `manifest.json` in the source archive, and that is expected.**
+> The manifest is generated per browser target by `scripts/build.mjs`, because
+> Chromium and Firefox need different keys from otherwise identical input. It
+> appears in the build output — `dist/firefox/manifest.json` — after running the
+> two commands below. The source archive is not an installable extension.
+
 ## Environment
 
 | | |
@@ -38,10 +44,11 @@ npm run build   # writes dist/chrome/ and dist/firefox/
 
 The submitted package corresponds to **`dist/firefox/`**.
 
-To produce the uploaded archive itself:
+To produce the uploaded archives:
 
 ```bash
-npm run package # writes web-ext-artifacts/dejapanify-<version>-firefox.zip
+npm run package         # the extension packages
+npm run source-archive  # this source archive
 ```
 
 ## Why the output is reproducible

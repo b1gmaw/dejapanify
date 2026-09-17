@@ -21,7 +21,8 @@
     "site": "node scripts/build-site.mjs",
     "demo": "node scripts/build.mjs && node scripts/serve-demo.mjs",
     "e2e": "node scripts/build.mjs --target=firefox && node scripts/e2e.mjs",
-    "e2e:headed": "node scripts/build.mjs --target=firefox && node scripts/e2e.mjs --headed"
+    "e2e:headed": "node scripts/build.mjs --target=firefox && node scripts/e2e.mjs --headed",
+    "source-archive": "node scripts/make-source-archive.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",

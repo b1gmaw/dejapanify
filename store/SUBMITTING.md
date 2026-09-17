@@ -43,11 +43,17 @@ web-ext-artifacts/dejapanify-<version>-chrome.zip    ← Edge (and Chrome, if ev
    upload a source archive. Mozilla requires this because the extension is
    bundled with esbuild.
 
-   Build a source archive that excludes artefacts:
+   Build the source archive:
 
    ```bash
-   git archive --format=zip -o web-ext-artifacts/source.zip HEAD
+   npm run source-archive
    ```
+
+   This writes `web-ext-artifacts/dejapanify-<version>-source.zip` from HEAD.
+   It deliberately contains **no `manifest.json`** — the manifest is generated
+   per target by `scripts/build.mjs` — so the archive carries a
+   `REVIEWERS-README.txt` at its root explaining that, and pointing at the two
+   commands that produce `dist/firefox/`.
 
    Point reviewers at `docs/REVIEWER_NOTES.md`, which documents the toolchain
    and the exact commands. In the "notes to reviewer" box, paste:

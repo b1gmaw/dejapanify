@@ -162,7 +162,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 216 tests
+npm test           # 221 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
