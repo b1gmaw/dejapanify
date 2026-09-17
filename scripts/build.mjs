@@ -10,6 +10,7 @@ import { mkdirSync, rmSync, writeFileSync, cpSync, existsSync, readdirSync, stat
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { zipDirectory } from './zip.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = createRequire(import.meta.url)(join(ROOT, 'package.json'));
@@ -74,7 +75,16 @@ function manifest(target) {
     base.browser_specific_settings = {
       gecko: {
         id: 'dejapanify@maw.dev',
-        strict_min_version: '115.0',
+        // 142 is the floor for data_collection_permissions below on Android (140
+        // on desktop). Nothing else here needs a version that recent, but the
+        // declaration is mandatory for new listings, so the floor follows it.
+        strict_min_version: '142.0',
+        // Mandatory for new Firefox extensions since November 2025. Ours is
+        // the simple case: the extension reads and rewrites form values in the
+        // page and never transmits anything, so it collects no data at all.
+        data_collection_permissions: {
+          required: ['none'],
+        },
       },
     };
   }
@@ -99,7 +109,7 @@ async function buildTarget(target) {
       outfile: join(outdir, `${entry.out}.js`),
       bundle: true,
       format: entry.format,
-      target: ['chrome110', 'firefox115'],
+      target: ['chrome110', 'firefox142'],
       platform: 'browser',
       sourcemap: WATCH ? 'inline' : false,
       minify: !WATCH,
@@ -140,13 +150,12 @@ function dirSize(dir) {
 }
 
 async function zip(target, outdir) {
-  const { execFileSync } = await import('node:child_process');
   const artifacts = join(ROOT, 'web-ext-artifacts');
   mkdirSync(artifacts, { recursive: true });
   const out = join(artifacts, `dejapanify-${pkg.version}-${target}.zip`);
   rmSync(out, { force: true });
-  execFileSync('zip', ['-qr', out, '.'], { cwd: outdir });
-  console.log(`  packaged ${out}`);
+  const bytes = zipDirectory(outdir, out);
+  console.log(`  packaged ${out} (${(bytes / 1024).toFixed(1)} KB)`);
 }
 
 for (const target of TARGETS) {

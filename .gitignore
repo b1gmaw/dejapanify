@@ -3,3 +3,4 @@ dist/
 web-ext-artifacts/
 *.zip
 .DS_Store
+store/.svg/
