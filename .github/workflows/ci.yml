@@ -71,3 +71,20 @@ jobs:
       - name: End-to-end conversion check
         run: npm run e2e -- --http-only
         timeout-minutes: 5
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
+      # The extension has no runtime dependencies, so anything found here is
+      # build tooling and reaches contributors rather than users. Still worth
+      # failing on: it is how the tree stays clean, and the fix is a bump.
+      - name: npm audit
+        run: npm audit --audit-level=high

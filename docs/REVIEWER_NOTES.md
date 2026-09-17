@@ -19,6 +19,16 @@ No other tools, downloads or network services are needed. Every build
 dependency is open source and installs from the public npm registry; the exact
 versions are pinned in the committed `package-lock.json`.
 
+**The extension itself has no dependencies at all.** `package.json` declares an
+empty `dependencies` block — esbuild, TypeScript, Vitest, jsdom and web-ext are
+build and test tooling only. Nothing from `node_modules` is bundled into the
+shipped package; every line in `dist/` comes from `src/`.
+
+If npm reports that esbuild's install script was blocked, the build still works
+and the output is unaffected: esbuild ships its platform binary as an
+`optionalDependencies` package, and the `postinstall` script is only a fallback
+for environments where that resolution fails.
+
 ## Commands
 
 ```bash

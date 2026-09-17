@@ -207,6 +207,28 @@ store/         listing copy, privacy policy, generated store images
 without a browser. `tests/integration.test.ts` runs the whole pipeline against
 `public/demo.html` under jsdom.
 
+### Dependencies and security
+
+The extension has **no runtime dependencies**. `package.json` declares an empty
+`dependencies` block; esbuild, TypeScript, Vitest, jsdom and web-ext are build
+and test tooling. Nothing from `node_modules` is bundled — every line in `dist/`
+comes from `src/`, which is why the package is around 18 KB.
+
+So a vulnerability reported by `npm audit` affects contributors' machines, never
+anyone who installed the extension. They are still worth fixing, and `npm audit`
+should report zero.
+
+One warning is expected and harmless:
+
+```
+npm warn install-scripts 1 package had install scripts blocked
+npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+```
+
+esbuild ships its platform binary as an optional dependency; the `postinstall`
+script is only a fallback. The build works with it blocked, and produces
+identical output.
+
 ### A note on NFKC
 
 `String.prototype.normalize('NFKC')` looks like it would solve this in one line.
