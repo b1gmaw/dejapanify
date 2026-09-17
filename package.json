@@ -17,7 +17,8 @@
     "zip": "node scripts/build.mjs --zip",
     "package": "node scripts/build.mjs --zip",
     "lint:ext": "web-ext lint --source-dir=dist/firefox",
-    "assets": "node scripts/make-store-assets.mjs"
+    "assets": "node scripts/make-store-assets.mjs",
+    "site": "node scripts/build-site.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",

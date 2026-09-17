@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -23,6 +23,9 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Lint the extension package
+        run: npm run build && npm run lint:ext
 
       - name: Build both targets
         run: npm run build

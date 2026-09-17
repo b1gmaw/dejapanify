@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — dejapanify</title>
+<meta name="description" content="dejapanify collects nothing, transmits nothing, and has no servers.">
+<link rel="icon" href="assets/icon128.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .prose { max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+  .prose h1 { font-size: 34px; margin-bottom: 8px; }
+  .prose h2 { font-size: 21px; margin-top: 36px; }
+  .prose hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+  .prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 16px 0; }
+  .prose th, .prose td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .prose th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .prose ul { color: var(--muted); }
+  .prose p { color: var(--muted); }
+  .prose h1, .prose h2, .prose strong { color: var(--fg); }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./" style="text-decoration:none;color:inherit">
+      <img src="assets/icon128.png" alt=""> dejapanify
+    </a>
+    <nav><a href="./">Home</a><a href="https://github.com/b1gmaw/dejapanify">GitHub</a></nav>
+  </div>
+</header>
+<main class="prose">
+<h1>Privacy Policy — dejapanify</h1>
+<p><strong>Last updated: 17 September 2026</strong></p>
+<h2>The short version</h2>
+<p>dejapanify collects nothing, transmits nothing, and has no servers.</p>
+<p>Everything the extension does happens locally in your browser. There is no analytics, no telemetry, no crash reporting, no account, and no network code of any kind in the extension.</p>
+<h2>What the extension accesses</h2>
+<p>To convert form input between half-width (半角) and full-width (全角), the extension reads and rewrites the <strong>values of form fields on pages you visit</strong>, along with the surrounding labels and attributes that indicate which character width a field requires.</p>
+<p>This happens entirely in your browser's memory, at the moment you interact with the field. Field values are never stored, logged, or sent anywhere.</p>
+<h2>What the extension stores</h2>
+<p>Only your own settings, kept in your browser's extension storage:</p>
+<ul><li>Which conversion types you have enabled</li><li>The confidence threshold</li><li>Whether the undo notice is shown</li><li>Lists of sites where you have enabled or disabled the extension</li></ul>
+<p>If your browser has extension sync turned on, your browser syncs these settings between your own devices using your browser account. That is your browser's sync, not ours — the extension author has no access to it and receives nothing.</p>
+<p>You can erase all of it at any time by removing the extension, or with <strong>Reset to defaults</strong> on the settings page.</p>
+<h2>What is never collected</h2>
+<p>To be explicit, the extension does <strong>not</strong> collect, transmit or store:</p>
+<ul><li>Anything you type into forms</li><li>Page contents, URLs or browsing history</li><li>Personal or identifying information</li><li>IP addresses</li><li>Analytics or usage statistics of any kind</li></ul>
+<h2>Permissions</h2>
+<table><thead><tr><th>Permission</th><th>Why</th></tr></thead><tbody><tr><td><code>storage</code></td><td>Saves your settings, described above. Nothing else.</td></tr><tr><td>Content script on all sites</td><td>Japanese forms are not limited to one domain, so the extension cannot know in advance which pages have them. It takes no action unless a page looks Japanese and a field identifies the width it needs.</td></tr></tbody></table>
+<h2>Third parties</h2>
+<p>There are none. The extension makes no network requests, loads no remote code, bundles no third-party analytics or advertising, and shares data with nobody — because it has no data to share.</p>
+<h2>Verifying this yourself</h2>
+<p>You don't have to take our word for it. The extension is open source under the MIT licence, and the published package is reproducible from that source:</p>
+<ul><li>Source: <a href="https://github.com/b1gmaw/dejapanify">https://github.com/b1gmaw/dejapanify</a></li><li>Searching the source for <code>fetch</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code> or</li></ul>
+<p><code>sendBeacon</code> returns nothing.</p>
+<h2>Contact</h2>
+<p>Questions or concerns: <a href="https://github.com/b1gmaw/dejapanify/issues">https://github.com/b1gmaw/dejapanify/issues</a></p>
+<h2>Changes</h2>
+<p>If this policy ever changes, the updated version will be published at this address and the date above will change. Since the extension collects no data, no change can retroactively affect information already gathered.</p>
+</main>
+<footer class="site">
+  <div class="wrap"><p><a href="./">← Back to dejapanify</a></p></div>
+</footer>
+</body>
+</html>

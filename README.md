@@ -67,7 +67,33 @@ Adding an explicit hint (「住所は全角で入力」) pushes it over the line
 - Run while your IME is mid-composition.
 - Send anything anywhere. There is no network code and no host permission.
 
-## Install from source
+## Install
+
+**→ [b1gmaw.github.io/dejapanify](https://b1gmaw.github.io/dejapanify/)** — install links,
+plus a live demo you can try without installing anything.
+
+| Browser | How |
+|---|---|
+| **Firefox** | One click from Mozilla Add-ons. Requires Firefox 142+. |
+| **Edge** | One click from Microsoft Edge Add-ons. |
+| **Chrome, Brave, Vivaldi, Opera** | Manual install — see below. |
+
+### Chrome and other Chromium browsers
+
+Chrome only permits installing extensions from the Chrome Web Store, and listing
+there carries a one-time fee this project has not paid. So these browsers need a
+manual install. Once, and it takes about two minutes:
+
+1. Download the ZIP from [Releases](https://github.com/b1gmaw/dejapanify/releases/latest)
+   and unzip it somewhere permanent — deleting the folder uninstalls the extension.
+2. Open `chrome://extensions` (Brave: `brave://extensions`).
+3. Enable **Developer mode**, top right.
+4. Click **Load unpacked** and select the unzipped folder.
+
+Chrome shows a "Disable developer mode extensions" notice on startup; that is its
+standard warning for anything not from its store.
+
+### From source
 
 ```bash
 git clone https://github.com/b1gmaw/dejapanify.git
@@ -76,14 +102,9 @@ npm install
 npm run build
 ```
 
-**Chromium** — visit `chrome://extensions`, enable *Developer mode*,
-*Load unpacked* → select `dist/chrome`.
-
-**Firefox** — visit `about:debugging#/runtime/this-firefox`,
-*Load Temporary Add-on* → select `dist/firefox/manifest.json`.
-
-Then open `public/demo.html`, click 「サンプル入力を挿入」 and tab through the
-fields to watch it work.
+Then load `dist/chrome` or `dist/firefox` as an unpacked extension. Open
+`public/demo.html`, click 「サンプル入力を挿入」 and tab through the fields to
+watch it work.
 
 ## Usage
 
@@ -113,11 +134,19 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 126 tests
+npm test           # 138 tests
 npm run typecheck
-npm run zip        # packaged zips in web-ext-artifacts/
-npm run icons      # regenerate icons (generated from code, not checked in as art)
+npm run lint:ext   # web-ext lint over dist/firefox
+npm run package    # store-ready zips in web-ext-artifacts/
+npm run icons      # regenerate the toolbar icons
+npm run assets     # regenerate the store listing images
+npm run site       # build the GitHub Pages site into docs/
 ```
+
+Icons, store images and the ZIP container are all generated from code rather
+than checked in as binary artefacts or produced by an external tool. The build
+is deterministic — the same source always yields byte-identical packages, which
+Mozilla's reviewers rely on. See [`docs/REVIEWER_NOTES.md`](docs/REVIEWER_NOTES.md).
 
 ### Layout
 
@@ -133,6 +162,9 @@ src/content/   DOM layer: descriptor extraction, IME-safe write-back, undo chip
 src/shared/    cross-browser storage shim
 src/popup/     toolbar popup
 src/options/   settings page
+src/site/      the landing page's live demo (imports src/core directly)
+docs/          GitHub Pages site + reviewer notes
+store/         listing copy, privacy policy, generated store images
 ```
 
 `src/core/` is deliberately DOM-free so the interesting logic can be tested
