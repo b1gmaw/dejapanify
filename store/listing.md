@@ -158,10 +158,14 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 
 | Field | Value |
 |---|---|
+| Publisher / author | `b1gmaw` |
 | Homepage | `https://b1gmaw.github.io/dejapanify/` |
 | Support site | `https://github.com/b1gmaw/dejapanify/issues` |
-| Privacy policy | `https://b1gmaw.github.io/dejapanify/privacy.html` |
+| Support email | *none — use the support site* |
+| Privacy policy (EN) | `https://b1gmaw.github.io/dejapanify/privacy.html` |
+| Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
 | Source code | `https://github.com/b1gmaw/dejapanify` |
+| Version | `0.1.0` |
 | License | MIT |
 
 ## Assets
@@ -202,3 +206,42 @@ Stores ask why each permission is needed. Answers:
 
 > None. Declared in the Firefox manifest as
 > `data_collection_permissions: { required: ["none"] }`.
+
+## Data collection answers
+
+Both stores ask these directly. The answers are all "no", and they are true of
+the code rather than aspirational — `tests/privacy.test.ts` scans the built
+package on every build and fails if a network primitive appears.
+
+### Firefox (AMO)
+
+| Question | Answer |
+|---|---|
+| Does this add-on collect or transmit user data? | **No** |
+| Manifest declaration | `data_collection_permissions: { required: ["none"] }` |
+| Privacy policy | required — use the URL above |
+
+AMO shows users the manifest declaration directly at install time, so it must
+stay in sync with this listing. It is asserted by the test suite.
+
+### Edge (Partner Center → Privacy)
+
+| Question | Answer |
+|---|---|
+| Does this extension collect personally identifiable information? | **No** |
+| Does it collect or transmit any user data? | **No** |
+| Is data shared with third parties? | **No** |
+| Privacy policy URL | required — use the URL above |
+| Does it use remote code? | **No** — everything executed is in the package |
+
+### If asked to justify it
+
+> The extension has no network code of any kind: no `fetch`, no
+> `XMLHttpRequest`, no `WebSocket`, no `sendBeacon`, and no remote scripts. It
+> requests one permission, `storage`, which holds only the user's own settings
+> (which conversions are enabled, a confidence threshold, and per-site
+> enable/disable lists). It declares no host permissions and has no background
+> script. Form values are read and rewritten in page memory at the moment the
+> user leaves a field, and are never stored or transmitted. The package contains
+> no third-party code: `package.json` declares no runtime dependencies, and
+> everything in the build output comes from the project's own source.

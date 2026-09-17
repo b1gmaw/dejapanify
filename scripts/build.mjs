@@ -36,6 +36,8 @@ function manifest(target) {
     name: 'dejapanify',
     version: pkg.version,
     description: DESCRIPTION,
+    author: 'b1gmaw',
+    homepage_url: 'https://b1gmaw.github.io/dejapanify/',
     // storage is the only permission needed: content scripts declared in the
     // manifest are injected without a separate host permission grant.
     permissions: ['storage'],

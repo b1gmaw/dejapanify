@@ -37,5 +37,14 @@
   },
   "overrides": {
     "image-size": "^2.0.4"
+  },
+  "author": "b1gmaw",
+  "homepage": "https://b1gmaw.github.io/dejapanify/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/b1gmaw/dejapanify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/b1gmaw/dejapanify/issues"
   }
 }

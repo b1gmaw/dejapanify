@@ -66,7 +66,9 @@ MIT licence, and the published package is reproducible from that source:
 
 - Source: https://github.com/b1gmaw/dejapanify
 - Searching the source for `fetch`, `XMLHttpRequest`, `WebSocket` or
-  `sendBeacon` returns nothing.
+  `sendBeacon` returns nothing. This is checked automatically: the test suite
+  scans the built package for network primitives, so adding any would fail the
+  build rather than quietly contradict this page.
 
 ## Contact
 

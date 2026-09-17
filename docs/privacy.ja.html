@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プライバシーポリシー — dejapanify</title>
+<meta name="description" content="dejapanify はデータを一切収集せず、送信もせず、サーバーもありません。">
+<link rel="icon" href="assets/icon128.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .prose { max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+  .prose h1 { font-size: 34px; margin-bottom: 8px; }
+  .prose h2 { font-size: 21px; margin-top: 36px; }
+  .prose hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+  .prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 16px 0; }
+  .prose th, .prose td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .prose th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .prose ul { color: var(--muted); }
+  .prose p { color: var(--muted); }
+  .prose h1, .prose h2, .prose strong { color: var(--fg); }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./" style="text-decoration:none;color:inherit">
+      <img src="assets/icon128.png" alt=""> dejapanify
+    </a>
+    <nav><a href="./">Home</a><a href="privacy.html">English</a><a href="https://github.com/b1gmaw/dejapanify">GitHub</a></nav>
+  </div>
+</header>
+<main class="prose">
+<h1>プライバシーポリシー — dejapanify</h1>
+<p><strong>最終更新日: 2026年9月17日</strong></p>
+<h2>要点</h2>
+<p>dejapanify は、データを一切収集しません。送信もしません。サーバーもありません。</p>
+<p>拡張機能の動作はすべて、お使いのブラウザの中だけで完結します。アクセス解析も、利用統計の送信も、クラッシュレポートも、アカウント登録もありません。通信を行うコードそのものが含まれていません。</p>
+<h2>拡張機能がアクセスするもの</h2>
+<p>半角と全角の変換を行うために、拡張機能は<strong>閲覧中のページの入力欄の値</strong>と、その欄がどの文字幅を求めているかを判断するための周辺のラベル・属性を読み取り、必要に応じて書き換えます。</p>
+<p>これはあなたが入力欄を操作したその瞬間に、ブラウザのメモリ上でのみ行われます。入力された値が保存・記録・送信されることは一切ありません。</p>
+<h2>拡張機能が保存するもの</h2>
+<p>保存するのは、あなた自身の設定だけです。ブラウザの拡張機能用ストレージに保存されます。</p>
+<ul><li>どの変換を有効にしているか</li><li>判定の厳しさ（確信度のしきい値）</li><li>変換時の通知を表示するかどうか</li><li>拡張機能を有効／無効にしたサイトの一覧</li></ul>
+<p>ブラウザの同期機能を有効にしている場合、これらの設定はブラウザのアカウントを通じてご自身の端末間で同期されます。これはブラウザ側の同期機能であり、開発者がその内容にアクセスすることはできず、何も受け取りません。</p>
+<p>設定は、拡張機能を削除するか、設定画面の「初期設定に戻す」でいつでも消去できます。</p>
+<h2>収集しないもの</h2>
+<p>明確にしておくと、以下はいずれも収集・送信・保存しません。</p>
+<ul><li>フォームに入力した内容</li><li>ページの内容、URL、閲覧履歴</li><li>個人情報や個人を特定できる情報</li><li>IPアドレス</li><li>利用状況や統計情報</li></ul>
+<h2>権限について</h2>
+<table><thead><tr><th>権限</th><th>理由</th></tr></thead><tbody><tr><td><code>storage</code></td><td>上記の設定を保存するためだけに使用します。</td></tr><tr><td>すべてのサイトでのコンテンツスクリプト</td><td>日本語のフォームは特定のドメインに限られないため、どのページに対象があるか事前に判断できません。ページが日本語で、かつ入力欄自身が必要な文字幅を示している場合にのみ動作します。</td></tr></tbody></table>
+<h2>第三者提供</h2>
+<p>ありません。拡張機能は通信を行わず、外部のコードを読み込まず、解析ツールや広告も含まず、誰ともデータを共有しません。共有すべきデータを持っていないからです。</p>
+<h2>ご自身で確認する方法</h2>
+<p>この説明を信じていただく必要はありません。本拡張機能は MIT ライセンスのオープンソースであり、公開されているパッケージはそのソースから再現できます。</p>
+<ul><li>ソースコード: <a href="https://github.com/b1gmaw/dejapanify">https://github.com/b1gmaw/dejapanify</a></li><li>ソース全体を <code>fetch</code>、<code>XMLHttpRequest</code>、<code>WebSocket</code>、<code>sendBeacon</code> で検索しても</li></ul>
+<p>一件も見つかりません。この点はテストで自動的に検証されており、通信コードが追加されればビルドが失敗します。</p>
+<h2>お問い合わせ</h2>
+<p>ご質問やご懸念は GitHub の Issue へお寄せください: <a href="https://github.com/b1gmaw/dejapanify/issues">https://github.com/b1gmaw/dejapanify/issues</a></p>
+<h2>本ポリシーの変更</h2>
+<p>本ポリシーを変更する場合は、更新版をこのページに掲載し、上記の最終更新日を改めます。本拡張機能はデータを収集しないため、変更が過去に取得された情報に遡って影響することはありません。</p>
+</main>
+<footer class="site">
+  <div class="wrap"><p><a href="./">← Back to dejapanify</a></p></div>
+</footer>
+</body>
+</html>

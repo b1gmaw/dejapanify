@@ -3,6 +3,17 @@
 Follow these in order. Each store is independent; you can do one and not the
 other.
 
+Settled details, so you don't have to decide mid-form:
+
+| | |
+|---|---|
+| Publisher / author | `b1gmaw` |
+| Version | `0.1.0` |
+| Support | `https://github.com/b1gmaw/dejapanify/issues` (no support email) |
+| Privacy policy | `https://b1gmaw.github.io/dejapanify/privacy.html` |
+| Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
+| Data collection | **None.** Pre-filled answers are in `listing.md`. |
+
 Before either: build and package.
 
 ```bash
@@ -48,6 +59,12 @@ web-ext-artifacts/dejapanify-<version>-chrome.zip    ← Edge (and Chrome, if ev
 
 5. Paste the listing copy from `listing.md`: summary, full description,
    category, homepage, support URL, and the privacy policy URL.
+
+   When asked **"Does this add-on collect or transmit user data?"** answer
+   **No**. The manifest already declares
+   `data_collection_permissions: { required: ["none"] }`, which Firefox shows
+   users at install time, so the two must agree — `listing.md` has the full
+   set of answers and the justification text.
 6. Upload the four screenshots from `store/assets/`.
 7. Submit. Review usually takes a few days.
 
@@ -67,8 +84,10 @@ Firefox 140+, and 142+ on Android.
 3. Upload `dejapanify-<version>-chrome.zip` (Edge takes the Chromium package).
 4. Fill in the listing from `listing.md`.
 5. Upload `store-logo-300.png` as the store logo and the four screenshots.
-6. Set the privacy policy URL, and declare that the extension does **not**
-   collect personal data.
+6. Set the privacy policy URL, and work through the Privacy section using the
+   pre-filled answers in `listing.md` — every one is **No**. Partner Center also
+   asks whether the extension uses remote code: it does not, everything executed
+   ships inside the package.
 7. Submit for certification.
 
 ---

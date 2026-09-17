@@ -22,6 +22,24 @@ const ASSETS = join(DOCS, 'assets');
 const escapeHtml = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+/**
+ * Characters that must not be separated by a space when joining wrapped lines.
+ *
+ * Japanese is written without inter-word spaces, so joining soft-wrapped source
+ * lines with " " injects gaps mid-sentence -- 「必要に 応じて」 instead of
+ * 「必要に応じて」. Latin text still needs the space, so the decision is made per
+ * boundary rather than per document.
+ */
+const CJK = /[\u3000-\u303F\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uFF00-\uFFEF]/;
+
+function joinWrapped(lines) {
+  return lines.reduce((acc, line) => {
+    if (!acc) return line;
+    const glue = CJK.test(acc.slice(-1)) && CJK.test(line.slice(0, 1)) ? '' : ' ';
+    return acc + glue + line;
+  }, '');
+}
+
 function inline(s) {
   return escapeHtml(s)
     .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -37,7 +55,7 @@ function renderMarkdown(md) {
   let i = 0;
 
   const flushParagraph = (buf) => {
-    if (buf.length) out.push(`<p>${inline(buf.join(' '))}</p>`);
+    if (buf.length) out.push(`<p>${inline(joinWrapped(buf))}</p>`);
     buf.length = 0;
   };
   const para = [];
@@ -95,17 +113,22 @@ function renderMarkdown(md) {
   return out.join('\n');
 }
 
-function privacyPage() {
-  const md = readFileSync(join(ROOT, 'store', 'privacy.md'), 'utf8');
-  // The H1 becomes the page title; the nav supplies the visible heading.
+/**
+ * Renders a privacy policy page from Markdown.
+ *
+ * The policy is quoted in two store listings and must have exactly one source
+ * of truth per language, so both pages are generated rather than hand-written.
+ */
+function privacyPage({ source, lang, title, description, otherHref, otherLabel }) {
+  const md = readFileSync(join(ROOT, 'store', source), 'utf8');
   const body = renderMarkdown(md);
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Privacy Policy — dejapanify</title>
-<meta name="description" content="dejapanify collects nothing, transmits nothing, and has no servers.">
+<title>${title}</title>
+<meta name="description" content="${description}">
 <link rel="icon" href="assets/icon128.png">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -127,7 +150,7 @@ function privacyPage() {
     <a class="brand" href="./" style="text-decoration:none;color:inherit">
       <img src="assets/icon128.png" alt=""> dejapanify
     </a>
-    <nav><a href="./">Home</a><a href="https://github.com/b1gmaw/dejapanify">GitHub</a></nav>
+    <nav><a href="./">Home</a><a href="${otherHref}">${otherLabel}</a><a href="https://github.com/b1gmaw/dejapanify">GitHub</a></nav>
   </div>
 </header>
 <main class="prose">
@@ -157,7 +180,28 @@ async function build() {
     logLevel: 'warning',
   });
 
-  writeFileSync(join(DOCS, 'privacy.html'), privacyPage());
+  writeFileSync(
+    join(DOCS, 'privacy.html'),
+    privacyPage({
+      source: 'privacy.md',
+      lang: 'en',
+      title: 'Privacy Policy — dejapanify',
+      description: 'dejapanify collects nothing, transmits nothing, and has no servers.',
+      otherHref: 'privacy.ja.html',
+      otherLabel: '日本語',
+    }),
+  );
+  writeFileSync(
+    join(DOCS, 'privacy.ja.html'),
+    privacyPage({
+      source: 'privacy.ja.md',
+      lang: 'ja',
+      title: 'プライバシーポリシー — dejapanify',
+      description: 'dejapanify はデータを一切収集せず、送信もせず、サーバーもありません。',
+      otherHref: 'privacy.html',
+      otherLabel: 'English',
+    }),
+  );
 
   cpSync(join(ROOT, 'public/icons/icon128.png'), join(ASSETS, 'icon128.png'));
   const storeAssets = join(ROOT, 'store/assets');
