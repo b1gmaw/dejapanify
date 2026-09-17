@@ -18,7 +18,10 @@
     "package": "node scripts/build.mjs --zip",
     "lint:ext": "web-ext lint --source-dir=dist/firefox",
     "assets": "node scripts/make-store-assets.mjs",
-    "site": "node scripts/build-site.mjs"
+    "site": "node scripts/build-site.mjs",
+    "demo": "node scripts/build.mjs && node scripts/serve-demo.mjs",
+    "e2e": "node scripts/build.mjs --target=firefox && node scripts/e2e.mjs",
+    "e2e:headed": "node scripts/build.mjs --target=firefox && node scripts/e2e.mjs --headed"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",

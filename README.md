@@ -72,11 +72,15 @@ Adding an explicit hint (「住所は全角で入力」) pushes it over the line
 **→ [b1gmaw.github.io/dejapanify](https://b1gmaw.github.io/dejapanify/)** — install links,
 plus a live demo you can try without installing anything.
 
+> **Not in the stores yet.** The Firefox and Edge listings have been prepared but
+> not submitted, so for now every browser installs from source — see below. The
+> table is what it will look like once they are live.
+
 | Browser | How |
 |---|---|
-| **Firefox** | One click from Mozilla Add-ons. Requires Firefox 142+. |
-| **Edge** | One click from Microsoft Edge Add-ons. |
-| **Chrome, Brave, Vivaldi, Opera** | Manual install — see below. |
+| **Firefox** | One click from Mozilla Add-ons *(not published yet)*. Requires Firefox 142+. |
+| **Edge** | One click from Microsoft Edge Add-ons *(not published yet)*. |
+| **Chrome, Brave, Vivaldi, Opera** | Manual install — Chrome allows no other route. |
 
 ### Chrome and other Chromium browsers
 
@@ -102,9 +106,33 @@ npm install
 npm run build
 ```
 
-Then load `dist/chrome` or `dist/firefox` as an unpacked extension. Open
-`public/demo.html`, click 「サンプル入力を挿入」 and tab through the fields to
-watch it work.
+Then load it, per browser:
+
+**Firefox** — open `about:debugging#/runtime/this-firefox`, click **Load
+Temporary Add-on**, and select `dist/firefox/manifest.json`. A temporary add-on
+is removed when Firefox closes, so repeat this after a restart.
+
+**Chrome, Brave, Vivaldi, Opera** — open `chrome://extensions` (Brave:
+`brave://extensions`), enable **Developer mode**, click **Load unpacked** and
+select the `dist/chrome` folder.
+
+### Trying it
+
+```bash
+npm run demo
+```
+
+That serves the test form at `http://127.0.0.1:8123/demo.html`. Click
+「サンプル入力を挿入」 and tab through the fields.
+
+**Open the demo through that address, not by double-clicking
+`public/demo.html`.** Browsers do not run extensions on `file://` pages: Firefox
+will not inject a content script there at all, and Chrome only does so if you
+tick *Allow access to file URLs* on the extension's details page. Opened as a
+local file the demo looks broken even when the extension is working perfectly.
+
+The demo page says at the top whether it can see the extension, so you are never
+left guessing.
 
 ## Usage
 
@@ -134,14 +162,21 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 138 tests
+npm test           # 154 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
 npm run icons      # regenerate the toolbar icons
 npm run assets     # regenerate the store listing images
 npm run site       # build the GitHub Pages site into docs/
+npm run demo       # serve the test form over http
+npm run e2e        # load the built extension into a real Firefox and verify it
 ```
+
+`npm run e2e` is the one that answers "does this actually work": it installs the
+built extension into a real headless Firefox via `web-ext`, opens the demo, and
+the page reports its own conversion results back. `npm run e2e:headed` shows the
+browser while it happens.
 
 Icons, store images and the ZIP container are all generated from code rather
 than checked in as binary artefacts or produced by an external tool. The build

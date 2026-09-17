@@ -31,9 +31,22 @@ function shouldRun(settings: Awaited<ReturnType<typeof loadSettings>>): boolean 
   return looksJapanese(document.body?.innerText?.slice(0, 4000) ?? '');
 }
 
+/**
+ * Marks the document so a page (and a human in devtools) can tell the content
+ * script is alive. Without this the extension fails completely silently: if it
+ * is never injected there is nothing at all to distinguish that from a page
+ * where it simply found no convertible fields.
+ */
+const ACTIVE_MARKER = 'dejapanify';
+
 function start(): void {
   if (observer) return;
   observer = observeFields(considerField);
+  try {
+    document.documentElement.dataset[ACTIVE_MARKER] = 'active';
+  } catch {
+    /* documentElement is always present in practice; never fail startup for it */
+  }
 
   // Capture phase: some sites call stopPropagation on submit handlers.
   document.addEventListener(
@@ -50,6 +63,11 @@ function stop(): void {
   observer?.disconnect();
   observer = null;
   destroyIndicator();
+  try {
+    delete document.documentElement.dataset[ACTIVE_MARKER];
+  } catch {
+    /* nothing meaningful to do if the marker cannot be removed */
+  }
 }
 
 async function init(): Promise<void> {

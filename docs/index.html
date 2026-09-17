@@ -215,16 +215,28 @@
     <div class="install">
 
       <div class="ibox" data-install="firefox">
-        <header><strong>Firefox</strong> <span class="badge">One click</span></header>
-        <p class="note">Install from Mozilla's add-on site. Updates arrive automatically.</p>
-        <p><a class="btn" id="STORE_URL_FIREFOX" href="https://addons.mozilla.org/firefox/">Add to Firefox</a></p>
-        <p class="note">Requires Firefox 142 or newer.</p>
+        <header><strong>Firefox</strong> <span class="badge warn">Not published yet</span></header>
+        <p class="note">
+          The Mozilla Add-ons listing is prepared but not yet submitted, so for now
+          Firefox installs from source. Requires Firefox 142 or newer.
+        </p>
+        <ol>
+          <li>Build it: <code>git clone https://github.com/b1gmaw/dejapanify.git</code>, then <code>npm install &amp;&amp; npm run build</code>.</li>
+          <li>Open <code>about:debugging#/runtime/this-firefox</code>.</li>
+          <li>Click <strong>Load Temporary Add-on</strong> and pick <code>dist/firefox/manifest.json</code>.</li>
+          <li>Try it with <code>npm run demo</code>.</li>
+        </ol>
+        <p class="note" style="margin-top:12px">
+          A temporary add-on is removed when Firefox closes, so repeat step 3 after a restart.
+        </p>
       </div>
 
       <div class="ibox" data-install="edge">
-        <header><strong>Microsoft Edge</strong> <span class="badge">One click</span></header>
-        <p class="note">Install from the Microsoft Edge Add-ons store. Updates arrive automatically.</p>
-        <p><a class="btn" id="STORE_URL_EDGE" href="https://microsoftedge.microsoft.com/addons">Add to Edge</a></p>
+        <header><strong>Microsoft Edge</strong> <span class="badge warn">Not published yet</span></header>
+        <p class="note">
+          The Edge Add-ons listing is prepared but not yet submitted. For now, follow the
+          Chromium instructions below — Edge loads unpacked extensions the same way.
+        </p>
       </div>
 
       <div class="ibox" data-install="chromium">
@@ -235,10 +247,10 @@
           need a manual install. It takes about two minutes and you only do it once.
         </p>
         <ol>
-          <li>Download <a href="https://github.com/b1gmaw/dejapanify/releases/latest">the latest release ZIP</a> and unzip it somewhere permanent — if you delete the folder, the extension stops working.</li>
+          <li>Build it: <code>git clone https://github.com/b1gmaw/dejapanify.git</code>, then <code>npm install &amp;&amp; npm run build</code>. Keep the folder — deleting it uninstalls the extension.</li>
           <li>Open <code>chrome://extensions</code> (Brave: <code>brave://extensions</code>).</li>
           <li>Turn on <strong>Developer mode</strong>, top right.</li>
-          <li>Click <strong>Load unpacked</strong> and choose the unzipped folder.</li>
+          <li>Click <strong>Load unpacked</strong> and choose the <code>dist/chrome</code> folder.</li>
         </ol>
         <p class="note" style="margin-top:12px">
           Chrome will show a "Disable developer mode extensions" warning on startup. That's
@@ -256,14 +268,19 @@
 
     </div>
 
-    <h3 style="margin-top:36px">Or build it yourself</h3>
+    <h3 style="margin-top:36px">Checking that it works</h3>
     <div class="ibox" style="margin-top:12px">
-      <pre>git clone https://github.com/b1gmaw/dejapanify.git
-cd dejapanify
-npm install
-npm run build</pre>
+      <pre>npm run demo</pre>
       <p class="note" style="margin-top:12px">
-        Then load <code>dist/chrome</code> or <code>dist/firefox</code> as an unpacked extension.
+        This serves the test form at <code>http://127.0.0.1:8123/demo.html</code>. The page
+        tells you at the top whether it can see the extension.
+      </p>
+      <p class="note" style="margin-top:10px">
+        <strong>Use that address rather than opening <code>public/demo.html</code> directly.</strong>
+        Browsers do not run extensions on <code>file://</code> pages — Firefox will not inject a
+        content script there at all, and Chrome only does so if you enable
+        <em>Allow access to file URLs</em> on the extension's details page. Opened as a local
+        file, the demo looks broken even when everything is working.
       </p>
     </div>
   </div>
