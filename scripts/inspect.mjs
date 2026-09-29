@@ -118,7 +118,12 @@ async function inspect(target) {
       conf: detection.confidence,
       label,
       why: detection.signals.map((s) => s.source).join(','),
-      strip: detection.stripSeparators,
+      // How the value will be shaped, beyond width: separators and case.
+      shape: [
+        detection.separators !== 'keep' ? `${detection.separators}-sep` : '',
+        detection.numberRole ?? '',
+        detection.letterCase ?? '',
+      ].filter(Boolean).join(' '),
       below: detection.confidence < DEFAULT_SETTINGS.minConfidence,
     });
   }
@@ -129,7 +134,7 @@ async function inspect(target) {
     const conf = r.kind ? r.conf.toFixed(2) : '   ';
     console.log(
       `  ${mark} ${clip(r.name, 22).padEnd(22)} ${kind.padEnd(12)} ${conf}  ` +
-      `${r.why ? `[${r.why}]` : ''}${r.strip ? ' strip' : ''}  ${r.label ? `“${r.label}”` : ''}`,
+      `${r.why ? `[${r.why}]` : ''}${r.shape ? ` {${r.shape}}` : ''}  ${r.label ? `“${r.label}”` : ''}`,
     );
   }
 

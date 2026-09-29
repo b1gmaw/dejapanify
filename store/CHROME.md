@@ -10,16 +10,31 @@ too. Work down the page in order; every answer you paste is in its own block.
 > the data answers below are not "nothing", as they were for Edge. They describe
 > what dejapanify reads while converting, which is still collected by no one.
 
+## Updating to 0.1.2 (after 0.1.1 is approved)
+
+1. Open the existing item in the developer dashboard → **Package** → upload
+   `dejapanify-0.1.2-chrome.zip`.
+2. **Privacy practices:** tick **Financial and payment information**, and paste
+   its justification from Step 4 below. 0.1.2 reads amounts in money fields to
+   add or remove thousands separators.
+3. **Store listing:** optionally swap in the updated descriptions from
+   [`listing.md`](listing.md), which mention the new behaviour.
+4. **Test instructions:** replace with the Step 6 text, which now includes the
+   phone, amount and capitals fields.
+5. Submit for review.
+
+---
+
 **Before you start:** build the package and load it in Chrome or Edge once.
 
 ```bash
 npm ci
-npm run package        # writes web-ext-artifacts/dejapanify-0.1.1-chrome.zip
+npm run package        # writes web-ext-artifacts/dejapanify-0.1.2-chrome.zip
 ```
 
 Then `chrome://extensions` → **Developer mode** on → **Load unpacked** →
 `dist/chrome`, run `npm run demo`, and try the form. The zip is also attached to
-the v0.1.1 release on GitHub.
+the v0.1.2 release on GitHub.
 
 ---
 
@@ -45,7 +60,7 @@ registration screen:
 
 ## Step 2 — Upload
 
-**Add new item** → upload **`dejapanify-0.1.1-chrome.zip`**.
+**Add new item** → upload **`dejapanify-0.1.2-chrome.zip`**.
 
 The name and short description come from the package, per language, and can't
 be edited in the dashboard:
@@ -133,21 +148,40 @@ All executed code ships inside the package. There are no remotely hosted scripts
 
 ### Data usage — what the extension handles
 
-Under Google's on-device rule, tick exactly these two:
+Under Google's on-device rule, tick exactly these three (for 0.1.2 onward):
 
 - **Personally identifiable information:** yes. To convert a field, the
   extension reads the value typed into it, and those fields include names,
   addresses, phone numbers and email addresses. The value is read and rewritten
   in page memory and is never stored or sent.
+- **Financial and payment information:** yes, for amounts only. In number fields
+  that hold money, such as a price, budget or annual income, it reads the amount
+  to add or remove thousands separators to match the form (5,000,000 or
+  5000000). Card numbers, security codes, expiry dates and bank account numbers
+  are excluded outright in code (`isPaymentField` in `src/core/keywords.ts`) and
+  are never read.
 - **Website content:** yes. It reads the text beside a field (its label and
-  instructions such as 「半角数字で入力してください」) to decide what the field
-  requires.
+  instructions such as 「半角数字で入力してください」) and any example value the
+  page shows, to decide what the field requires.
+
+If a justification box accompanies the financial category, paste:
+
+```
+Only amounts typed into number fields that hold money, such as a price, a budget or an annual income, and only to add or remove thousands separators so the value matches the form's own example (for example 5,000,000 or 5000000). The value is read and rewritten in page memory when the user leaves the field, and is never stored or transmitted. Payment card numbers, security codes, expiry dates and bank account numbers are excluded in code and are never read.
+```
+
+> **About 0.1.1, which is in review now.** It was submitted with personal
+> information and website content only. 0.1.1 doesn't add commas, but it does
+> already convert the width of digits in a money field when the page asks for
+> 半角数字, so under Google's rule its disclosure arguably should have ticked
+> financial information too. Updating the privacy practices when you upload
+> 0.1.2 corrects that. If the reviewer queries 0.1.1 in the meantime, give the
+> explanation above.
 
 Leave these **unticked**, for the reasons given:
 
 | Category | Why not |
 |---|---|
-| Financial and payment information | Card and bank-account fields are excluded outright in code (`isPaymentField` in `src/core/keywords.ts`). |
 | Authentication information | Password fields are excluded by input type. |
 | Health information, Personal communications, Location | Nothing of the kind is read. |
 | Web history | No browsing history is read or kept. The per-site lists hold only hostnames the user adds themselves. |
@@ -174,9 +208,10 @@ https://b1gmaw.github.io/dejapanify/privacy.html
 ```
 
 The policy states the same thing as the data answers above. It says which
-fields the extension never touches, and that it "handles" personal information
-and website content only in the on-device sense, collecting none of it. Google
-requires the two to agree.
+fields the extension never touches, that it reads amounts only to regroup their
+digits, and that it "handles" personal and financial information and website
+content only in the on-device sense, collecting none of it. Google requires the
+two to agree.
 
 ## Step 5 — Distribution
 
@@ -205,6 +240,9 @@ HOW TO SEE IT WORK (about one minute)
 6. Tab through the rest. Expected:
    Postal code: "１５０－０００１" becomes "1500001"
    Email: "ｅｘａｍｐｌｅ＠ｍａｉｌ．ｊｐ" becomes "example@mail.jp"
+   Mobile: "０９０１２３４５６７８" becomes "090-1234-5678" (hyphens added to match the field's example)
+   Annual income: "６０００００００" becomes "60,000,000" (commas added to match the field's example)
+   Name in romaji: "yamada taro" becomes "YAMADA TARO" (the field asks for capitals)
    The お名前 field is deliberately left unchanged, because nothing on the page says which width it needs.
 7. Each conversion shows a small notice with a one-click undo. Ctrl+Z also works.
 

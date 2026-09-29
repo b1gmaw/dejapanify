@@ -28,6 +28,10 @@ const SAMPLES: Record<string, string> = {
   tel1: '０３',
   tel2: '１２３４',
   tel3: '５６７８',
+  mobile: '０９０１２３４５６７８',
+  home_tel: '03-1234-5678',
+  income: '６０００００００',
+  name_roman: 'yamada taro',
   address: 'Tokyo-to Shibuya-ku 1-2-3',
   email: 'ｅｘａｍｐｌｅ＠ｅｘａｍｐｌｅ．ｃｏ．ｊｐ',
   member_id: 'ＡＢＣ１２３４',
@@ -57,6 +61,10 @@ describe('detection over the demo form', () => {
     ['zip', 'digits-half'],
     ['tel1', 'digits-half'],
     ['tel2', 'digits-half'],
+    ['mobile', 'digits-half'],
+    ['home_tel', 'digits-half'],
+    ['income', 'digits-half'],
+    ['name_roman', 'alnum-half'],
     ['email', 'alnum-half'],
     ['member_id', 'alnum-half'],
     ['furikomi', 'katakana-half'],
@@ -98,6 +106,12 @@ describe('conversion over the demo form', () => {
     expect(val('tel1')).toBe('03');
     expect(val('tel2')).toBe('1234');
     expect(val('tel3')).toBe('5678');
+    // Separators follow each field's own example, read from the real DOM.
+    expect(val('mobile')).toBe('090-1234-5678');
+    expect(val('home_tel')).toBe('0312345678');
+    expect(val('income')).toBe('60,000,000');
+    // Capitals, because the note beside the field asks for 大文字.
+    expect(val('name_roman')).toBe('YAMADA TARO');
     expect(val('email')).toBe('example@example.co.jp');
     expect(val('member_id')).toBe('ABC1234');
     expect(val('furikomi')).toBe('ﾔﾏﾀﾞﾀﾛｳ');

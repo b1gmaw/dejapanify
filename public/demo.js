@@ -15,6 +15,10 @@
     tel1: '０３',
     tel2: '１２３４',
     tel3: '５６７８',
+    mobile: '０９０１２３４５６７８',
+    home_tel: '03-1234-5678',
+    income: '６０００００００',
+    name_roman: 'yamada taro',
     address: 'Tokyo-to Shibuya-ku 1-2-3',
     email: 'ｅｘａｍｐｌｅ＠ｅｘａｍｐｌｅ．ｃｏ．ｊｐ',
     member_id: 'ＡＢＣ１２３４',
@@ -125,6 +129,12 @@
       { id: 'name_kana', input: '\u3084\u307e\u3060 \u305f\u308d\u3046', expect: '\u30e4\u30de\u30c0\u3000\u30bf\u30ed\u30a6' },
       { id: 'zip', input: '\uff11\uff15\uff10\uff0d\uff10\uff10\uff10\uff11', expect: '1500001' },
       { id: 'email', input: '\uff45\uff58\uff41\uff4d\uff50\uff4c\uff45\uff20\uff4d\uff41\uff49\uff4c\uff0e\uff4a\uff50', expect: 'example@mail.jp' },
+      // Separators follow the page's example: added, removed, commas.
+      { id: 'mobile', input: '\uff10\uff19\uff10\uff11\uff12\uff13\uff14\uff15\uff16\uff17\uff18', expect: '090-1234-5678' },
+      { id: 'home_tel', input: '03-1234-5678', expect: '0312345678' },
+      { id: 'income', input: '\uff16\uff10\uff10\uff10\uff10\uff10\uff10\uff10', expect: '60,000,000' },
+      // Capitals when the page asks for them.
+      { id: 'name_roman', input: 'yamada taro', expect: 'YAMADA TARO' },
     ];
 
     const results = [];

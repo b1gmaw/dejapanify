@@ -15,8 +15,22 @@ export type SignalSource =
   | 'keyword'        // matched 電話 / kana / etc. in a label or name attribute
   | 'autocomplete'   // the autocomplete attribute
   | 'inputmode'      // inputmode / type attributes
+  | 'example'        // the page's own example value, e.g. 例：090-1234-5678
   | 'hint-text'      // the page literally said 「半角数字」
   | 'pattern';       // the pattern attribute's character classes
+
+/** What a numeric field holds, which decides how separators are applied. */
+export type NumberRole = 'phone' | 'postal' | 'amount';
+
+/**
+ * What to do with hyphens or commas in a numeric field:
+ *   strip — remove them (ハイフンなし, or an example with none)
+ *   add   — insert them where they belong (ハイフンあり, or an example with them)
+ *   keep  — leave what the user typed, only normalising width
+ */
+export type SeparatorPolicy = 'strip' | 'add' | 'keep';
+
+export type LetterCase = 'upper' | 'lower';
 
 export interface Signal {
   source: SignalSource;
@@ -33,6 +47,16 @@ export interface Detection {
   signals: Signal[];
   /** The page asked for no hyphens (ハイフンなし) in a numeric field. */
   stripSeparators: boolean;
+  /** Separator handling for numeric fields; 'strip' iff stripSeparators. */
+  separators: SeparatorPolicy;
+  /** What the numeric field holds, when it can be told. */
+  numberRole?: NumberRole;
+  /** Group sizes from a hyphenated example or pattern, e.g. [3, 4]. */
+  exampleGroups?: number[];
+  /** The page asked for capitals (or lowercase) — latin letters only. */
+  letterCase?: LetterCase;
+  /** The field's maxlength; formatting never produces a longer value. */
+  maxLength?: number;
   /** The page asked for a fixed digit count, e.g. pattern="\d{7}". */
   expectedDigits?: number;
 }
@@ -46,6 +70,12 @@ export interface NormalizeOptions {
   stripSeparators: boolean;
   /** Rewrite dash-likes to ー inside kana fields. */
   normalizeProlonged: boolean;
+  /** Overrides stripSeparators when set. */
+  separators?: SeparatorPolicy;
+  numberRole?: NumberRole;
+  exampleGroups?: number[];
+  letterCase?: LetterCase;
+  maxLength?: number;
 }
 
 export const DEFAULT_NORMALIZE_OPTIONS: NormalizeOptions = {

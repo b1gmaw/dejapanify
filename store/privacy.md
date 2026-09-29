@@ -25,10 +25,16 @@ Some fields are never read or changed at all, whatever the page asks for:
 card-holder name), and **bank account, branch and institution numbers**. The
 extension leaves them exactly as you typed them.
 
-Because it reads what you type into other fields, such as names, addresses,
-phone numbers and email addresses, some stores describe the extension as
-*handling* personal information and website content. That handling is the
-on-device conversion described above and nothing more; none of it is collected.
+In number fields that hold money, such as a price, a budget or an annual income,
+it reads the amount you typed in order to add or remove thousands separators
+(5,000,000 or 5000000) to match the form. It never reads card numbers, security
+codes or bank account numbers.
+
+Because it reads what you type into these fields, such as names, addresses,
+phone numbers, email addresses and amounts, some stores describe the extension
+as *handling* personal and financial information and website content. That
+handling is the on-device conversion described above and nothing more; none of
+it is collected.
 
 ## What the extension stores
 

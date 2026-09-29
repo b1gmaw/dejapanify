@@ -7,13 +7,21 @@
  * so parsing that text tells us the answer directly instead of guessing from
  * the field's name.
  */
-import type { FieldKind } from './types.js';
+import type { FieldKind, LetterCase } from './types.js';
+
+export type SeparatorInstruction = 'strip' | 'add';
 
 export interface HintResult {
   kind?: FieldKind;
   confidence: number;
   /** 「ハイフンなし」/「ハイフン抜き」: remove separators after converting. */
   stripSeparators: boolean;
+  /** What the page said about hyphens: ハイフンなし → strip, ハイフンあり → add. */
+  hyphens?: SeparatorInstruction;
+  /** What the page said about commas: カンマ不要 → strip, 3桁区切り → add. */
+  commas?: SeparatorInstruction;
+  /** The page asked for capitals (大文字, "capital letters") or lowercase. */
+  letterCase?: LetterCase;
   /** The matched substring, kept for the debug overlay. */
   evidence: string;
 }
@@ -54,18 +62,82 @@ const HINT_RULES: readonly HintRule[] = [
   { pattern: /全角/, kind: 'text-full', confidence: 0.55 },
 ];
 
-const STRIP_SEPARATOR_RULES: readonly RegExp[] = [
+const STRIP_HYPHEN_RULES: readonly RegExp[] = [
   /ハイフン\s*(?:なし|無し|ぬき|抜き|不要|は不要|は入力しない)/,
   /[-－ー]\s*(?:なし|無し|不要)/,
+  /\b(?:without|no)\s+(?:hyphens?|dashes)\b/i,
+];
+
+const ADD_HYPHEN_RULES: readonly RegExp[] = [
+  /ハイフン\s*(?:あり|有り|込み|を含|必須|付き)/,
+  /ハイフン\s*[（(]?\s*[-－]\s*[)）]?\s*(?:を|も)?\s*(?:入力|含)/,
+  /\b(?:with|including)\s+(?:hyphens?|dashes)\b/i,
+];
+
+const STRIP_COMMA_RULES: readonly RegExp[] = [
+  /(?:カンマ|コンマ|[,，])\s*(?:なし|無し|ぬき|抜き|不要|は不要|は入力しない)/,
+  /\bwithout\s+commas?\b|\bno\s+commas?\b/i,
+];
+
+/**
+ * Deliberately narrow. 「カンマ区切りで入力」 on its own usually means "separate
+ * several items with commas", a list, not thousands grouping; only phrasing
+ * that names three-digit grouping counts.
+ */
+const ADD_COMMA_RULES: readonly RegExp[] = [
+  /[3３]\s*桁\s*(?:ごと|毎)?\s*(?:に|で)?\s*(?:の)?\s*(?:カンマ|コンマ|[,，])?\s*(?:区切|を付)/,
+  /(?:カンマ|コンマ)\s*(?:付き|あり|有り)/,
+];
+
+/** Instructions that remove every separator at once. */
+const STRIP_ALL_RULES: readonly RegExp[] = [
   /記号\s*(?:なし|無し|不要)/,
   /(?:数字|番号)\s*のみ/,
   /スペース\s*(?:なし|無し|不要)/,
+  /\b(?:digits|numbers)\s+only\b/i,
 ];
 
-const KEEP_SEPARATOR_RULES: readonly RegExp[] = [
-  /ハイフン\s*(?:あり|有り|込み|を含|必須|付き)/,
-  /ハイフン\s*[（(]?\s*[-－]\s*[)）]?\s*(?:を|も)?\s*(?:入力|含)/,
+/**
+ * Phrases that mention letter case without asking for a conversion: a
+ * case-sensitivity notice, or a rule a password must satisfy. Any of these
+ * vetoes case conversion outright, because uppercasing a case-sensitive value
+ * changes what it is.
+ */
+const CASE_VETO_RULES: readonly RegExp[] = [
+  /区別/,                                      // 大文字・小文字を区別します
+  /大文字.{0,6}小文字|小文字.{0,6}大文字/,     // both cases named together
+  /大小/,                                      // 大小文字
+  /(?:大文字|小文字)\s*(?:を|が)?\s*(?:[0-9０-９一二三]+\s*文字以上)?\s*(?:含|混)/, // must contain
+  /case[-\s]?(?:in)?sensitive/i,
+  /\b(?:upper|lower)\s*(?:and|&|\/|or)\s*(?:upper|lower)\s*case\b/i,
+  /\bmixed\s*case\b/i,
+  /\bat\s+least\s+(?:one|1)\b/i,
+  /\bmust\s+(?:contain|include)\b/i,
 ];
+
+const UPPER_RULES: readonly RegExp[] = [
+  /大文字/,
+  /\b(?:capital|block)\s+letters?\b/i,
+  /\b(?:in|block|all)\s+capitals\b/i,
+  /\bupper\s*-?\s*case\b/i,
+  /\ball\s+caps\b/i,
+];
+
+const LOWER_RULES: readonly RegExp[] = [
+  /小文字/,
+  /\blower\s*-?\s*case\b/i,
+  /\bsmall\s+letters\b/i,
+];
+
+/** What the text says about letter case, or nothing if it's unclear. */
+export function parseLetterCase(text: string): LetterCase | undefined {
+  if (CASE_VETO_RULES.some((re) => re.test(text))) return undefined;
+  const upper = UPPER_RULES.some((re) => re.test(text));
+  const lower = LOWER_RULES.some((re) => re.test(text));
+  if (upper && !lower) return 'upper';
+  if (lower && !upper) return 'lower';
+  return undefined;
+}
 
 /**
  * Scan a blob of label / placeholder / note text for width instructions.
@@ -85,15 +157,34 @@ export function parseHintText(text: string): HintResult {
     }
   }
 
-  const keeps = KEEP_SEPARATOR_RULES.some((re) => re.test(normalized));
-  if (!keeps) {
-    const stripMatch = STRIP_SEPARATOR_RULES.find((re) => re.test(normalized));
-    if (stripMatch) {
-      result.stripSeparators = true;
-      if (!result.evidence) result.evidence = stripMatch.exec(normalized)?.[0] ?? '';
-    }
+  const note = (re: RegExp) => {
+    if (!result.evidence) result.evidence = re.exec(normalized)?.[0] ?? '';
+  };
+  const first = (rules: readonly RegExp[]) => rules.find((re) => re.test(normalized));
+
+  // An explicit "with" beats a "without", so an add instruction is checked
+  // first: 「ハイフンありで入力（ハイフンなしは不可）」 means add.
+  const addHyphen = first(ADD_HYPHEN_RULES);
+  const stripHyphen = first(STRIP_HYPHEN_RULES);
+  const stripAll = first(STRIP_ALL_RULES);
+  if (addHyphen) {
+    result.hyphens = 'add';
+  } else if (stripHyphen ?? stripAll) {
+    result.hyphens = 'strip';
+    note((stripHyphen ?? stripAll)!);
   }
 
+  const addComma = first(ADD_COMMA_RULES);
+  const stripComma = first(STRIP_COMMA_RULES);
+  if (addComma) result.commas = 'add';
+  else if (stripComma ?? stripAll) {
+    result.commas = 'strip';
+    note((stripComma ?? stripAll)!);
+  }
+
+  result.stripSeparators = result.hyphens === 'strip';
+  const letterCase = parseLetterCase(normalized);
+  if (letterCase) result.letterCase = letterCase;
   return result;
 }
 

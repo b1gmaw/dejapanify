@@ -7,7 +7,7 @@
  * away from the shipped behaviour.
  */
 import { detectField, type FieldDescriptor } from '../core/detect.js';
-import { normalizeValue, needsNormalization } from '../core/normalize.js';
+import { normalizeValue, needsNormalization, optionsFor } from '../core/normalize.js';
 import { FIELD_KIND_LABELS, DEFAULT_SETTINGS } from '../core/types.js';
 
 interface DemoField {
@@ -51,7 +51,7 @@ function convert(field: DemoField): void {
     return;
   }
 
-  const options = { stripSeparators: detection.stripSeparators };
+  const options = optionsFor(detection);
   const kindLabel = FIELD_KIND_LABELS[detection.kind].split(' (')[0]!;
   const why = detection.signals[0]?.evidence ?? 'field attributes';
 

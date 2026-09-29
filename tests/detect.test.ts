@@ -168,6 +168,13 @@ describe('regressions found by auditing real Japanese sites', () => {
     expect(d === null || d.kind !== 'digits-half').toBe(true);
   });
 
+  it('does not treat a street-address field as a number', () => {
+    // Found on a real municipal contact form: 「住所(町名・番地)」 was classed as
+    // half-width digits because 番地 was a numeric keyword.
+    const d = detectField({ name: 'item[136]', labelText: '住所(町名・番地)' });
+    expect(d === null || d.kind !== 'digits-half').toBe(true);
+  });
+
   it('does not read kanagawa as a kana field', () => {
     const d = detectField({ name: 'kanagawa', labelText: '神奈川' });
     expect(d === null || d.kind !== 'katakana-full').toBe(true);

@@ -4,28 +4,42 @@
 
 | Store | Status | Listing |
 |---|---|---|
-| Firefox Add-ons | **Live** — v0.1.0 approved; **v0.1.1 to upload as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
-| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted; v0.1.1 to follow once certified | *listing URL appears once certified* |
-| Chrome Web Store | **In review** — v0.1.1 submitted, see [`CHROME.md`](CHROME.md) | *listing URL appears once approved* |
+| Firefox Add-ons | **Live** — v0.1.0 approved; **upload v0.1.2 as an update** (skip 0.1.1) | https://addons.mozilla.org/firefox/addon/dejapanify/ |
+| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted; v0.1.2 to follow once certified | *listing URL appears once certified* |
+| Chrome Web Store | **In review** — v0.1.1 submitted; v0.1.2 to follow once approved, see [`CHROME.md`](CHROME.md) | *listing URL appears once approved* |
 
-**Current version: 0.1.1.** Compared with 0.1.0 it adds English and Japanese
-translations of the name and description, so stores can list it in Japanese, and
-it stops touching payment card and bank account fields.
+**Current version: 0.1.2.**
+
+- **0.1.1** added English and Japanese translations of the name and description,
+  so stores can list it in Japanese, and stopped touching payment card and bank
+  account fields.
+- **0.1.2** follows each form's own format:
+  - uppercase when a field asks for capitals (大文字, "capital letters");
+  - hyphens in phone numbers and postal codes added or removed to match the
+    page's example or instruction, with landlines split using the official area
+    code table;
+  - thousands commas in amounts added or removed the same way.
+
+  It also stops treating 「町名・番地」 address fields as numbers.
+
+**Data disclosure for 0.1.2:** adding commas means reading amounts in money
+fields. Chrome counts that as handling financial information, so `CHROME.md`
+ticks it for 0.1.2.
 
 For a **new version**, bump `version` in `package.json`, run the checks and
 `npm run package` below, then upload the new zip to each live listing as an
 update rather than creating a new one. Firefox needs a fresh
 `npm run source-archive` alongside it every time.
 
-**Edge timing:** let 0.1.0 finish certification before uploading 0.1.1.
-Replacing a package that's still in review can restart certification.
+**Edge and Chrome timing:** let the version in review finish before uploading
+0.1.2. Replacing a package that's still in review can restart it.
 
 **Edge's data answers:** Edge 0.1.0 was declared as collecting nothing. Chrome
 counts data *handled on the device* as disclosable; Microsoft's documentation
 says "collects" and I couldn't confirm whether it applies the same rule. If
-certification queries it, answer as `CHROME.md` does: personal information
-typed into form fields and the text beside them are read on-device to convert
-the field, and nothing is stored or sent.
+certification queries it, answer as `CHROME.md` does: personal information,
+amounts typed into money fields, and the text beside fields are read on-device
+to convert them, and nothing is stored or sent.
 
 ---
 
@@ -37,7 +51,7 @@ Settled details, so you don't have to decide mid-form:
 | | |
 |---|---|
 | Publisher / author | `b1gmaw` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Support | `https://github.com/b1gmaw/dejapanify/issues` (no support email) |
 | Privacy policy | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |

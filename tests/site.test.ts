@@ -49,6 +49,13 @@ describe('landing page demo', () => {
     expect($('d-furikomi').value).toBe('ﾔﾏﾀﾞﾀﾛｳ');
   });
 
+  it('follows the example for hyphens and commas, and capitalises on request', () => {
+    fillAndConvert();
+    expect($('d-mobile').value).toBe('090-1234-5678');
+    expect($('d-income').value).toBe('60,000,000');
+    expect($('d-roman').value).toBe('YAMADA TARO');
+  });
+
   it('leaves the unlabelled field alone, as the page claims', () => {
     fillAndConvert();
     expect($('d-name').value).toBe('ﾔﾏﾀﾞ ﾀﾛｳ');

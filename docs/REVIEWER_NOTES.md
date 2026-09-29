@@ -112,3 +112,4 @@ instructions identify the width it requires. See `src/core/detect.ts`.
 | `scripts/build.mjs` | esbuild bundling and manifest generation |
 | `scripts/zip.mjs` | Deterministic ZIP writer |
 | `scripts/make-icons.mjs` | Generates the PNG icons from code |
+| `src/core/jp-area-codes.ts` | **Committed data**, not built: Japanese landline area-code lengths, generated from the Ministry of Internal Affairs and Communications' published number assignments by `scripts/make-area-codes.mjs`. It is not regenerated during the build (that needs network access and LibreOffice), so the build stays offline and reproducible. `tests/numbers.test.ts` checks the file is exactly what the generator emits for its rules. |
