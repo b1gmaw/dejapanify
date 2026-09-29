@@ -98,13 +98,50 @@ web-ext-artifacts/dejapanify-<version>-chrome.zip    ← Edge and Chrome
    `REVIEWERS-README.txt` at its root explaining that, and pointing at the two
    commands that produce `dist/firefox/`.
 
-   Point reviewers at `docs/REVIEWER_NOTES.md`, which documents the toolchain
-   and the exact commands. In the "notes to reviewer" box, paste:
+   In the **Notes to Reviewer** box, paste the block below, changing the version
+   number in step 4 if it's not 0.1.2. The same steps are in
+   `REVIEWERS-README.txt` at the root of the source archive, and in more detail
+   in `docs/REVIEWER_NOTES.md`.
 
-   > Build instructions are in `docs/REVIEWER_NOTES.md`.
-   > `npm ci && npm run build` reproduces `dist/firefox/` byte for byte;
-   > the build embeds no timestamps and the archive writer is deterministic.
-   > Node 24 (see `.nvmrc`). No network access or data collection.
+   ```
+   BUILD INSTRUCTIONS (source code is attached)
+
+   1. Environment
+      OS: Ubuntu 24.04 LTS, ARM64 or x86_64
+      Node.js 24.14.0 with npm 11.9.0 (the npm that ships with it)
+      Nothing else: no system packages, no global installs, no web-based tools.
+      The only network access is "npm ci" fetching the pinned dependencies
+      from the public npm registry (exact versions in package-lock.json).
+
+   2. Install Node.js 24.14.0 (skip if "node --version" prints v24.14.0)
+      curl -O https://nodejs.org/dist/v24.14.0/node-v24.14.0-linux-arm64.tar.xz
+      tar -xf node-v24.14.0-linux-arm64.tar.xz
+      export PATH="$PWD/node-v24.14.0-linux-arm64/bin:$PATH"
+      (on x86_64 use linux-x64; or with nvm: nvm install 24.14.0)
+      Check: node --version -> v24.14.0, npm --version -> 11.9.0
+
+   3. Build (from the root of the unpacked source archive)
+      npm ci
+      npm run build
+      The submitted add-on is the output in dist/firefox/.
+
+   4. Compare with the submitted add-on
+      unzip dejapanify-0.1.2-firefox.zip -d submitted
+      diff -r -x META-INF submitted dist/firefox && echo IDENTICAL
+      Please compare the unpacked files, not zip checksums: the zip
+      container's compressed bytes depend on the Node build's zlib, while the
+      files are identical.
+
+   NOTES
+   - The source archive has no manifest.json; it is generated per browser by
+     scripts/build.mjs and appears as dist/firefox/manifest.json.
+   - Verified before submission: the source archive unpacked into an empty
+     directory and built with Node 24.14.0 / npm 11.9.0 on Ubuntu reproduced
+     the submitted add-on file for file.
+   - The extension has no runtime dependencies; everything in dist/ comes from
+     src/. No network requests and no data collection, which the test suite
+     enforces (npm test).
+   ```
 
 5. Paste the listing copy from `listing.md`: summary, full description,
    category, homepage, support URL, and the privacy policy URL.

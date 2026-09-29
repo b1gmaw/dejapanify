@@ -13,17 +13,79 @@ steps below reproduce them **byte for byte** from the submitted source.
 > appears in the build output — `dist/firefox/manifest.json` — after running the
 > two commands below. The source archive is not an installable extension.
 
-## Environment
+## Step-by-step build
+
+### 1. Environment
 
 | | |
 |---|---|
-| Operating system | Ubuntu 24.04 (any Linux x64 works) |
-| Node.js | 24.x — see `.nvmrc` |
-| npm | 10 or newer |
+| Operating system | Ubuntu 24.04 LTS (Mozilla's default review environment) |
+| CPU | ARM64 or x86_64 |
+| Node.js | **24.14.0** (also in `.nvmrc`) |
+| npm | **11.9.0**, which ships with Node 24.14.0 |
 
-No other tools, downloads or network services are needed. Every build
-dependency is open source and installs from the public npm registry; the exact
-versions are pinned in the committed `package-lock.json`.
+Nothing else is needed: no system packages, no global npm installs, no
+web-based tools. The only network access is `npm ci` downloading the pinned
+dependencies from the public npm registry. Every build dependency is open
+source, and the exact versions are pinned in the committed
+`package-lock.json`.
+
+**Tested:** Ubuntu with exactly Node 24.14.0 and npm 11.9.0, on x86_64. The
+published source archive was unpacked into an empty directory and the steps
+below were followed; the output matched the submitted add-on file for file.
+The lockfile pins esbuild's native binary for every platform, including
+`@esbuild/linux-arm64` for ARM64 builders. esbuild is designed to give the same
+output on every platform, but the ARM64 build itself has not been tried.
+
+### 2. Install Node.js 24.14.0
+
+Skip this step if `node --version` already prints `v24.14.0`.
+
+Using the official binary (no root needed; use `linux-x64` instead of
+`linux-arm64` on x86_64):
+
+```bash
+curl -O https://nodejs.org/dist/v24.14.0/node-v24.14.0-linux-arm64.tar.xz
+tar -xf node-v24.14.0-linux-arm64.tar.xz
+export PATH="$PWD/node-v24.14.0-linux-arm64/bin:$PATH"
+```
+
+Or with [nvm](https://github.com/nvm-sh/nvm): `nvm install 24.14.0`.
+
+Check both versions:
+
+```bash
+node --version   # v24.14.0
+npm --version    # 11.9.0
+```
+
+### 3. Build
+
+```bash
+unzip dejapanify-<version>-source.zip -d dejapanify-src
+cd dejapanify-src
+npm ci          # installs the exact pinned dependency tree
+npm run build   # writes dist/firefox/ and dist/chrome/
+```
+
+**`dist/firefox/` is the submitted add-on.** The build takes a few seconds.
+
+### 4. Compare with the submitted add-on
+
+Unpack the submitted file, then diff it against the build output:
+
+```bash
+unzip dejapanify-<version>-firefox.zip -d submitted   # the uploaded file
+diff -r -x META-INF submitted dist/firefox && echo IDENTICAL
+```
+
+- **`-x META-INF`** ignores the signature folder that Mozilla adds to a signed
+  add-on. The unsigned uploaded file doesn't have one, so it makes no
+  difference there.
+- **Compare the unpacked files, not zip checksums.** The files are identical, but
+  the zip container's compressed bytes depend on the zlib library bundled with
+  whichever Node build compresses them. The same files compressed by different
+  Node versions can produce a different `.zip` checksum.
 
 **The extension itself has no dependencies at all.** `package.json` declares an
 empty `dependencies` block — esbuild, TypeScript, Vitest, jsdom and web-ext are
@@ -35,19 +97,12 @@ and the output is unaffected: esbuild ships its platform binary as an
 `optionalDependencies` package, and the `postinstall` script is only a fallback
 for environments where that resolution fails.
 
-## Commands
+### Producing the uploaded files
+
+For completeness, these are the commands that made the uploaded files:
 
 ```bash
-npm ci          # installs the exact pinned dependency tree
-npm run build   # writes dist/chrome/ and dist/firefox/
-```
-
-The submitted package corresponds to **`dist/firefox/`**.
-
-To produce the uploaded archives:
-
-```bash
-npm run package         # the extension packages
+npm run package         # the extension zips, in web-ext-artifacts/
 npm run source-archive  # this source archive
 ```
 
@@ -57,26 +112,19 @@ The build is deterministic by construction, so a rebuild can be diffed directly
 against the uploaded package:
 
 - **esbuild is version-pinned** in `package-lock.json`. Its output depends on
-  the esbuild version rather than on the Node version, so any Node 20+ runtime
-  produces identical bundles.
+  the esbuild version, not the Node version.
 - **No timestamps, hashes or build IDs** are embedded in the output. Nothing in
   the build reads the clock, the environment or the git state.
 - **The archive writer is deterministic** (`scripts/zip.mjs`): entries are
-  sorted by name and every timestamp is pinned to the ZIP epoch
-  (1980-01-01), so the same input always yields the same bytes. It is a plain
-  Node implementation over `node:zlib` — no `zip` binary is required.
-
-You can confirm this locally:
-
-```bash
-npm run package && sha256sum web-ext-artifacts/*.zip
-npm run package && sha256sum web-ext-artifacts/*.zip   # identical
-```
+  sorted by name and every timestamp is pinned to the ZIP epoch (1980-01-01).
+  With a given Node build, the same files always give the same zip bytes. It's
+  plain Node over `node:zlib`; no `zip` binary is required. As noted in step 4,
+  compare unpacked contents across different Node versions, not zip checksums.
 
 ## Verifying the extension
 
 ```bash
-npm test            # 126 unit and integration tests
+npm test            # 371 unit and integration tests
 npm run typecheck   # tsc --noEmit
 npm run lint:ext    # web-ext lint (0 errors, 0 warnings)
 ```
