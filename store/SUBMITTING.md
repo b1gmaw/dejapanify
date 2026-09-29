@@ -6,7 +6,7 @@
 |---|---|---|
 | Firefox Add-ons | **Live** — v0.1.0 approved; **v0.1.1 to upload as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
 | Microsoft Edge Add-ons | **In review** — v0.1.0 submitted; v0.1.1 to follow once certified | *listing URL appears once certified* |
-| Chrome Web Store | **Preparing** — v0.1.1, see [`CHROME.md`](CHROME.md) | — |
+| Chrome Web Store | **In review** — v0.1.1 submitted, see [`CHROME.md`](CHROME.md) | *listing URL appears once approved* |
 
 **Current version: 0.1.1.** Compared with 0.1.0 it adds English and Japanese
 translations of the name and description, so stores can list it in Japanese, and

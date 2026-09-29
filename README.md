@@ -78,12 +78,13 @@ plus a live demo you can try without installing anything.
 |---|---|
 | **Firefox** | **[Add to Firefox](https://addons.mozilla.org/firefox/addon/dejapanify/)** — one click from Mozilla Add-ons. Requires Firefox 142+. |
 | **Edge** | Submitted to Microsoft Edge Add-ons and **in review**. Until it's approved, install it manually as below, using `edge://extensions`. |
-| **Chrome, Brave, Vivaldi, Opera** | A Chrome Web Store listing is being prepared. Until it's live, install manually as below. |
+| **Chrome, Brave, Vivaldi, Opera** | Submitted to the Chrome Web Store and **in review**. Until it's approved, install manually as below. |
 
 ### Chrome and other Chromium browsers
 
 Chrome only permits one-click installs from the Chrome Web Store, and the
-listing there isn't live yet. Until it is, these browsers need a manual install.
+listing there is still in review. Until it's approved, these browsers need a
+manual install.
 You do it once, and it takes about two minutes:
 
 1. Download the ZIP from [Releases](https://github.com/b1gmaw/dejapanify/releases/latest)
