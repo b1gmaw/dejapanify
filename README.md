@@ -72,14 +72,10 @@ Adding an explicit hint (「住所は全角で入力」) pushes it over the line
 **→ [b1gmaw.github.io/dejapanify](https://b1gmaw.github.io/dejapanify/)** — install links,
 plus a live demo you can try without installing anything.
 
-> **Not in the stores yet.** The Firefox and Edge listings have been prepared but
-> not submitted, so for now every browser installs from source — see below. The
-> table is what it will look like once they are live.
-
 | Browser | How |
 |---|---|
-| **Firefox** | One click from Mozilla Add-ons *(not published yet)*. Requires Firefox 142+. |
-| **Edge** | One click from Microsoft Edge Add-ons *(not published yet)*. |
+| **Firefox** | **[Add to Firefox](https://addons.mozilla.org/firefox/addon/dejapanify/)** — one click from Mozilla Add-ons. Requires Firefox 142+. |
+| **Edge** | Submitted to Microsoft Edge Add-ons and **in review**. Until it's approved, install it manually as below, using `edge://extensions`. |
 | **Chrome, Brave, Vivaldi, Opera** | Manual install — Chrome allows no other route. |
 
 ### Chrome and other Chromium browsers
@@ -90,7 +86,7 @@ manual install. Once, and it takes about two minutes:
 
 1. Download the ZIP from [Releases](https://github.com/b1gmaw/dejapanify/releases/latest)
    and unzip it somewhere permanent — deleting the folder uninstalls the extension.
-2. Open `chrome://extensions` (Brave: `brave://extensions`).
+2. Open `chrome://extensions` (Brave: `brave://extensions`, Edge: `edge://extensions`).
 3. Enable **Developer mode**, top right.
 4. Click **Load unpacked** and select the unzipped folder.
 
@@ -162,7 +158,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 237 tests
+npm test           # 239 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/

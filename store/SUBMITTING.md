@@ -1,5 +1,20 @@
 # Submitting dejapanify to the stores
 
+## Current status
+
+| Store | Status | Listing |
+|---|---|---|
+| Firefox Add-ons | **Live** — v0.1.0 approved | https://addons.mozilla.org/firefox/addon/dejapanify/ |
+| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted | *listing URL appears once certified* |
+| Chrome Web Store | Not submitted — one-time US$5 fee | — |
+
+For a **new version**, bump `version` in `package.json`, run the checks and
+`npm run package` below, then upload the new zip to each live listing as an
+update rather than creating a new one. Firefox needs a fresh
+`npm run source-archive` alongside it every time.
+
+---
+
 Follow these in order. Each store is independent; you can do one and not the
 other.
 
@@ -119,8 +134,10 @@ desktop browser users.
 
 ## After a listing goes live
 
-Update the two placeholder URLs in `docs/index.html` (search for
-`STORE_URLS`) with the real listing links, then redeploy the page:
+Firefox is done: its install button in `docs/index.html` (`STORE_URL_FIREFOX`)
+points at the live listing. When Edge is certified, replace the "In review"
+notice in the `data-install="edge"` box with an **Add to Edge** button carrying
+the listing URL, update the table above and the README, then redeploy:
 
 ```bash
 npm run site && git add docs && git commit -m "Point install buttons at the live listings"

@@ -237,5 +237,7 @@ Privacy policy: https://b1gmaw.github.io/dejapanify/privacy.html
 ## After it goes live
 
 Update the install buttons on the landing page — search `docs/index.html` for
-`data-install="edge"` — and replace the "not published yet" notice with the
-listing URL. Then `npm run site` and commit.
+`data-install="edge"` — and replace the "In review" notice with an
+**Add to Edge** button carrying the listing URL. Update the status table in
+`SUBMITTING.md` and the README install table to match. Then `npm run site` and
+commit.
