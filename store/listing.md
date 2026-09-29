@@ -60,6 +60,16 @@ match.
   郵便番号    １５０－０００１   →  1500001
   メール      ｅｘａｍｐｌｅ＠…  →  example@…
 
+It also follows the form's own format:
+
+  携帯電話 (例：090-1234-5678)   ０９０１２３４５６７８  →  090-1234-5678
+  希望年収 (例：5,000,000)       ６００００００          →  6,000,000
+  ローマ字（大文字）             yamada taro            →  YAMADA TARO
+
+Hyphens and commas are added or removed to match the page's example or
+instruction. Landline numbers are split correctly using the official Japanese
+area-code table.
+
 HOW IT DECIDES
 
 It does not guess. It collects signals and converts only when they are
@@ -67,6 +77,7 @@ conclusive:
 
   • pattern attributes      — what the site actually enforces
   • the printed instruction — 「半角数字で入力してください」
+  • the page's own example  — 例：090-1234-5678
   • autocomplete            — postal-code, tel, email
   • type and inputmode
   • field names and labels  — name_kana, 「フリガナ」
@@ -80,7 +91,9 @@ WHAT IT WILL NEVER DO
   • Touch password, hidden, file, date or checkbox inputs
   • Read or change payment card fields or bank account numbers
   • Convert a field it could not identify
-  • Convert meaning — 山田 never becomes ヤマダ, only width changes
+  • Convert meaning — 山田 never becomes ヤマダ; only width changes, plus letter
+    case and separators when the form asks for them
+  • Change letter case where the page says case matters (大文字・小文字を区別)
   • Act while your IME is mid-composition
   • Send anything anywhere
 
@@ -119,12 +132,22 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
   郵便番号    １５０－０００１   →  1500001
   メール      ｅｘａｍｐｌｅ＠…  →  example@…
 
+フォームが示す書式にも合わせます。
+
+  携帯電話（例：090-1234-5678）  ０９０１２３４５６７８  →  090-1234-5678
+  希望年収（例：5,000,000）      ６００００００          →  6,000,000
+  ローマ字（大文字）             yamada taro            →  YAMADA TARO
+
+ハイフンやカンマは、ページの記入例や注意書きに合わせて付けたり外したりします。
+固定電話の番号は、総務省の市外局番の情報にもとづいて正しい位置で区切ります。
+
 判定のしくみ
 
 推測はしません。次のような手がかりを集め、確実な場合にだけ変換します。
 
   • pattern属性          — サイトが実際に検証しているルール
   • 画面の注意書き        — 「半角数字で入力してください」
+  • ページの記入例        — 例：090-1234-5678
   • autocomplete属性      — postal-code、tel、email など
   • type / inputmode 属性
   • 項目名やラベル        — name_kana、「フリガナ」など
@@ -137,7 +160,9 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
   • パスワード・非表示・ファイル・日付・チェックボックス欄の変更
   • クレジットカード情報・銀行の口座番号の入力欄の読み取りや変更
   • 判別できなかった欄の変換
-  • 意味の変換（山田がヤマダになることはありません。幅のみ変換）
+  • 意味の変換（山田がヤマダになることはありません。変えるのは文字幅と、
+    フォームが求める場合の大文字・小文字や区切り記号だけです）
+  • 「大文字・小文字を区別します」と書かれた欄での大文字・小文字の変更
   • IMEでの入力中の動作
   • 外部へのデータ送信
 
@@ -167,7 +192,7 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 | Privacy policy (EN) | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
 | Source code | `https://github.com/b1gmaw/dejapanify` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | License | MIT |
 
 ## Assets

@@ -139,6 +139,45 @@
       </div>
 
       <div class="field">
+        <label for="d-mobile">携帯電話番号</label>
+        <span class="hint">例のとおりハイフンを付けてご入力ください</span>
+        <input id="d-mobile" name="mobile" type="text" data-demo-field
+               data-label="携帯電話番号" data-hint=""
+               data-sample="０９０１２３４５６７８" placeholder="例）090-1234-5678" autocomplete="off">
+        <span class="explain" data-explain="d-mobile"></span>
+        <span class="chip" data-chip="d-mobile" hidden>
+          <span class="tick">✓</span><span class="chip-label"></span>
+          <button class="chip-undo" type="button">元に戻す</button>
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="d-income">希望年収（円）</label>
+        <span class="hint">例のとおり3桁ごとのカンマを付けてご入力ください</span>
+        <input id="d-income" name="income" type="text" data-demo-field
+               data-label="希望年収" data-hint=""
+               data-sample="６０００００００" placeholder="例）5,000,000" autocomplete="off">
+        <span class="explain" data-explain="d-income"></span>
+        <span class="chip" data-chip="d-income" hidden>
+          <span class="tick">✓</span><span class="chip-label"></span>
+          <button class="chip-undo" type="button">元に戻す</button>
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="d-roman">お名前（ローマ字）</label>
+        <span class="hint">パスポートと同じ表記で、大文字でご入力ください</span>
+        <input id="d-roman" name="name_roman" type="text" data-demo-field
+               data-label="お名前（ローマ字）" data-hint="大文字でご入力ください"
+               data-sample="yamada taro" placeholder="TARO YAMADA" autocomplete="off">
+        <span class="explain" data-explain="d-roman"></span>
+        <span class="chip" data-chip="d-roman" hidden>
+          <span class="tick">✓</span><span class="chip-label"></span>
+          <button class="chip-undo" type="button">元に戻す</button>
+        </span>
+      </div>
+
+      <div class="field">
         <label for="d-furikomi">振込名義</label>
         <span class="hint">半角カタカナでご入力ください（銀行システムの都合により）</span>
         <input id="d-furikomi" name="furikomi" data-demo-field

@@ -5,7 +5,7 @@
  * form, which makes it the most reliable signal available — more reliable even
  * than the printed hint text, because it is what the form actually enforces.
  */
-import type { FieldKind } from './types.js';
+import type { FieldKind, LetterCase } from './types.js';
 
 export interface PatternResult {
   kind?: FieldKind;
@@ -13,8 +13,42 @@ export interface PatternResult {
   evidence: string;
   /** Pattern admits no hyphen/space, so separators must be stripped. */
   stripSeparators: boolean;
+  /** Pattern requires a hyphen (\d{3}-\d{4}), so it must be added. */
+  requiresHyphen?: boolean;
+  /** Digit groups of a hyphenated pattern, e.g. [3, 4] for \d{3}-\d{4}. */
+  groups?: number[];
+  /** Pattern admits only capitals (or only lowercase). */
+  letterCase?: LetterCase;
   /** Fixed length demanded by a {n} quantifier over a digit class. */
   expectedDigits?: number;
+}
+
+const DIGIT_GROUP = /(?:\\d|\[0-9\])\{(\d+)\}/g;
+
+/**
+ * True when a hyphen is mandatory: present outside any character class and not
+ * made optional by ? or *, and with no | alternatives that might omit it.
+ */
+function hyphenRequired(body: string): boolean {
+  if (body.includes('|')) return false;
+  const outsideClasses = body.replace(/\[[^\]]*\]/g, 'X');
+  return /\\?-(?![?*])/.test(outsideClasses);
+}
+
+/** \d{3}-\d{4} -> [3, 4]; anything less regular -> undefined. */
+function hyphenGroups(body: string): number[] | undefined {
+  if (!/^(?:(?:\\d|\[0-9\])\{\d+\}\\?-)+(?:\\d|\[0-9\])\{\d+\}$/.test(body)) return undefined;
+  return [...body.matchAll(DIGIT_GROUP)].map((m) => Number(m[1]));
+}
+
+/** An HTML pattern is case-sensitive, so a class with only A-Z means capitals. */
+function patternCase(source: string): LetterCase | undefined {
+  if (/\\w|\\p\{/.test(source)) return undefined;
+  const upper = /A-Z|Ａ-Ｚ/.test(source);
+  const lower = /a-z|ａ-ｚ/.test(source);
+  if (upper && !lower) return 'upper';
+  if (lower && !upper) return 'lower';
+  return undefined;
 }
 
 /** Character-range probes, checked against the raw pattern source. */
@@ -56,6 +90,11 @@ export function analyzePattern(source: string): PatternResult {
       result.evidence = 'pattern accepts ASCII digits only';
       // No hyphen anywhere in the pattern => the field rejects separators.
       result.stripSeparators = !/-/.test(body);
+      if (hyphenRequired(body)) {
+        result.requiresHyphen = true;
+        const groups = hyphenGroups(body);
+        if (groups) result.groups = groups;
+      }
     } else if (/^[\w\\\[\]{}()+*?.,|^$@-]*$/.test(source) && /(?:a-z|A-Z)/.test(source)) {
       result.kind = 'alnum-half';
       result.confidence = 0.8;
@@ -66,6 +105,9 @@ export function analyzePattern(source: string): PatternResult {
   if (DIGITS_ONLY.test(source)) {
     result.stripSeparators = true;
   }
+
+  const letterCase = patternCase(source);
+  if (letterCase) result.letterCase = letterCase;
 
   const fixed = /(?:\\d|\[0-9\])\{(\d+)\}/.exec(source);
   if (fixed?.[1]) {

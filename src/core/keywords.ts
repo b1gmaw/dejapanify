@@ -1,5 +1,23 @@
 /** Keyword tables for classifying a field by its name/id/label text. */
-import type { FieldKind } from './types.js';
+import type { FieldKind, NumberRole } from './types.js';
+
+/**
+ * Money amounts. They join the numeric fields so their digits are converted,
+ * and they are the only fields that ever receive thousands commas.
+ */
+const AMOUNT_TERMS: readonly string[] = [
+  '金額', '価格', '料金', '年収', '月収', '収入', '予算', '費用', '給与', '給料', '年俸',
+  '売上', '資本金', '希望額', '借入額', '預金額',
+  'amount', 'price', 'salary', 'income', 'budget', 'revenue', 'fee', 'cost',
+];
+
+const PHONE_TERMS: readonly string[] = [
+  '電話', 'でんわ', '携帯', 'ケータイ', 'ファックス', 'fax', 'tel', 'telephone', 'phone', 'mobile',
+];
+
+const POSTAL_TERMS: readonly string[] = [
+  '郵便番号', '〒', 'zip', 'zipcode', 'postal', 'postcode', 'postal_code',
+];
 
 export interface KeywordRule {
   kind: FieldKind;
@@ -37,8 +55,11 @@ export const KEYWORD_RULES: readonly KeywordRule[] = [
       '電話', '電話番号', 'でんわ', 'TEL', 'tel', 'telephone', 'phone', 'mobile',
       '携帯', '携帯番号', 'ケータイ', 'fax', 'FAX', 'ファックス',
       '郵便番号', '〒', 'zip', 'zipcode', 'postal', 'postcode', 'postal_code',
-      '番地', '会員番号', '社員番号',
+      // Not 番地: on real forms a 「町名・番地」 field holds a street address
+      // such as 阿保1丁目1-1, not a number.
+      '会員番号', '社員番号',
       '年齢', 'age', '数量', 'quantity',
+      ...AMOUNT_TERMS,
     ],
   },
   {
@@ -157,6 +178,24 @@ export function isPaymentField(haystack: string, autocomplete = ''): boolean {
   if (tokens.some((t) => t.startsWith('cc-') || t.startsWith('transaction-'))) return true;
   const lower = haystack.toLowerCase();
   return PAYMENT_TERMS.some((term) => termMatches(term, lower));
+}
+
+/**
+ * What a numeric field holds, from its attributes and label: phone, postal
+ * code or money amount. Undefined when nothing says; the page's example may
+ * still decide it.
+ */
+export function numberRoleOf(haystack: string, autocomplete = '', type = ''): NumberRole | undefined {
+  const token = autocomplete.toLowerCase().trim().split(/\s+/).pop() ?? '';
+  if (token.startsWith('tel') || type.toLowerCase() === 'tel') return 'phone';
+  if (token === 'postal-code') return 'postal';
+  const lower = haystack.toLowerCase();
+  // Postal before phone: 「〒・電話番号」 style combined labels are rare, but a
+  // label naming 郵便番号 is never a phone number.
+  if (POSTAL_TERMS.some((t) => termMatches(t, lower))) return 'postal';
+  if (PHONE_TERMS.some((t) => termMatches(t, lower))) return 'phone';
+  if (AMOUNT_TERMS.some((t) => termMatches(t, lower))) return 'amount';
+  return undefined;
 }
 
 export function matchKeywords(haystack: string): { kind: FieldKind; confidence: number; evidence: string } | null {

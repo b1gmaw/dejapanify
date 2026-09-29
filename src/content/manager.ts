@@ -8,7 +8,7 @@
  * browser autofill.
  */
 import { detectField } from '../core/detect.js';
-import { normalizeValue, needsNormalization } from '../core/normalize.js';
+import { normalizeValue, needsNormalization, optionsFor } from '../core/normalize.js';
 import type { Detection, Settings } from '../core/types.js';
 import { describeField, isEditableField, isWritable, type EditableField } from './describe.js';
 import { setFieldValue, revertFieldValue, markComposing, isComposing } from './applier.js';
@@ -80,7 +80,7 @@ export function convertField(el: EditableField, trigger: 'blur' | 'submit' | 'in
   if (!isWritable(el)) return false;
 
   const { detection } = entry;
-  const options = { stripSeparators: detection.stripSeparators };
+  const options = optionsFor(detection);
   const current = el.value;
   if (!needsNormalization(current, detection.kind, options)) return false;
 
