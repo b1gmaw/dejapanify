@@ -4,11 +4,11 @@
 
 | Store | Status | Listing |
 |---|---|---|
-| Firefox Add-ons | **Live** — v0.1.0 approved; **upload v0.1.2 as an update** (skip 0.1.1) | https://addons.mozilla.org/firefox/addon/dejapanify/ |
-| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted; v0.1.2 to follow once certified | *listing URL appears once certified* |
-| Chrome Web Store | **In review** — v0.1.1 submitted; v0.1.2 to follow once approved, see [`CHROME.md`](CHROME.md) | *listing URL appears once approved* |
+| Firefox Add-ons | **Live** — v0.1.2; **upload v0.1.3 as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
+| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted; v0.1.3 to follow once certified (skip 0.1.2) | *listing URL appears once certified* |
+| Chrome Web Store | **In review** — v0.1.1 submitted; v0.1.3 to follow once approved (skip 0.1.2), see [`CHROME.md`](CHROME.md) | *listing URL appears once approved* |
 
-**Current version: 0.1.2.**
+**Current version: 0.1.3.**
 
 - **0.1.1** added English and Japanese translations of the name and description,
   so stores can list it in Japanese, and stopped touching payment card and bank
@@ -21,10 +21,22 @@
   - thousands commas in amounts added or removed the same way.
 
   It also stops treating 「町名・番地」 address fields as numbers.
+- **0.1.3** replaces the icon with the new 全→半 artwork, everywhere: the
+  toolbar, the extensions page, the store logo and tiles, and the website.
+  Nothing else changes.
 
-**Data disclosure for 0.1.2:** adding commas means reading amounts in money
+**Data disclosure from 0.1.2:** adding commas means reading amounts in money
 fields. Chrome counts that as handling financial information, so `CHROME.md`
-ticks it for 0.1.2.
+ticks it from 0.1.2 on. 0.1.3 changes nothing here.
+
+**New store images for 0.1.3:** after uploading the package, also replace the
+listing images, since the stores keep the old ones until you do:
+
+| Store | Replace |
+|---|---|
+| Edge | Extension logo → `store/assets/store-logo-300.png`; small and large promo tiles |
+| Chrome | Store icon (if the dashboard has the field) → `public/icons/icon128.png`; small promo tile and marquee |
+| Firefox | The listing icon comes from the package. Re-upload it under **Edit product page → Images** only if the old one still shows after approval |
 
 For a **new version**, bump `version` in `package.json`, run the checks and
 `npm run package` below, then upload the new zip to each live listing as an
@@ -51,7 +63,7 @@ Settled details, so you don't have to decide mid-form:
 | | |
 |---|---|
 | Publisher / author | `b1gmaw` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Support | `https://github.com/b1gmaw/dejapanify/issues` (no support email) |
 | Privacy policy | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |

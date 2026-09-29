@@ -1,17 +1,17 @@
 /**
  * Generates the store listing images (screenshots, tiles, logo).
  *
- * Same approach as make-icons.mjs: the artwork is authored as SVG here and
- * rasterised with rsvg-convert, so the listing images are reproducible from
- * source and a size change is a one-line edit rather than a redesign in an
- * image editor.
+ * The layouts are authored as SVG here and rasterised with rsvg-convert, so the
+ * listing images are reproducible from source and a size change is a one-line
+ * edit rather than a redesign in an image editor. The logo is the icon
+ * artwork in art/, embedded as-is.
  *
  * Requires `rsvg-convert` (librsvg) and a CJK font. Both are checked for up
  * front, and the script exits cleanly with an explanation if either is absent,
  * so CI never fails on a missing optional tool.
  */
 import { execFileSync } from 'node:child_process';
-import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { writeFileSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -225,26 +225,28 @@ function screenshotPrivacy() {
 }
 
 // --- tiles ------------------------------------------------------------------
-function logoMark(cx, cy, scale, bg = C.accent) {
-  // The same wide-bar-over-narrow-bar mark as the toolbar icon.
+
+/**
+ * The extension's icon artwork (art/icon-300.png), embedded as a data URI so
+ * the tiles show the same mark as the toolbar and the SVG stays self-contained
+ * for rsvg-convert.
+ */
+const ICON_DATA_URI = `data:image/png;base64,${readFileSync(join(ROOT, 'art', 'icon-300.png')).toString('base64')}`;
+
+function logoMark(cx, cy, scale) {
   const s = 100 * scale;
-  const x = cx - s / 2, y = cy - s / 2;
-  let b = rect(x, y, s, s, bg, s * 0.22);
-  const barH = s * 0.13, gap = s * 0.12;
-  const wide = s * 0.58, narrow = s * 0.29, left = x + (s - wide) / 2;
-  b += rect(left, cy - gap / 2 - barH, wide, barH, '#fff', barH / 2);
-  b += rect(left, cy + gap / 2, narrow, barH, '#fff', barH / 2);
-  return b;
+  return `<image href="${ICON_DATA_URI}" x="${cx - s / 2}" y="${cy - s / 2}" width="${s}" height="${s}"/>`;
 }
 
 function storeLogo() {
-  return svg(300, 300, rect(0, 0, 300, 300, C.card) + logoMark(150, 150, 2.1));
+  // Edge's 300x300 logo: the artwork at its native size, on white.
+  return svg(300, 300, rect(0, 0, 300, 300, C.card) + logoMark(150, 150, 3));
 }
 
 function promoTile() {
   const W = 440, H = 280;
   let b = rect(0, 0, W, H, C.card);
-  b += logoMark(84, 104, 0.92);
+  b += logoMark(84, 104, 1.05);
   b += text(140, 96, 'dejapanify', { size: 30, weight: 700 });
   b += text(140, 126, '半角・全角 自動変換', { size: 18, fill: C.muted });
   b += rect(36, 168, 368, 76, C.bg, 12, C.line, 2);
@@ -260,7 +262,7 @@ function promoTile() {
 function marquee() {
   const W = 1400, H = 560;
   let b = rect(0, 0, W, H, C.card);
-  b += logoMark(180, 280, 1.5);
+  b += logoMark(180, 280, 2.2);
   b += text(310, 250, 'dejapanify', { size: 66, weight: 700 });
   b += text(312, 300, '半角・全角の入力ミスを自動で修正', { size: 30, fill: C.muted });
   b += rect(312, 340, 700, 90, C.bg, 14, C.line, 2);

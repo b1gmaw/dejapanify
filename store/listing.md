@@ -192,7 +192,7 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 | Privacy policy (EN) | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
 | Source code | `https://github.com/b1gmaw/dejapanify` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | License | MIT |
 
 ## Assets

@@ -29,16 +29,18 @@ faster than a company account.
 ## Step 2–3 — Create the extension and upload the package
 
 Upload **`dejapanify-<version>-chrome.zip`** — Edge takes the Chromium package.
-The first submission was 0.1.0; the current version is 0.1.2. Each package is
+The first submission was 0.1.0; the current version is 0.1.3. Each package is
 published on the matching GitHub release, and a rebuild reproduces it byte for
 byte.
 
-**Updating to 0.1.2:** wait until 0.1.0 is certified, then upload the new zip on
-the extension's **Packages** page (skip 0.1.1). From 0.1.1 onward the package
-ships English and Japanese, so Partner Center can show a Japanese listing. 0.1.2
-also reads amounts in money fields to add or remove thousands commas. If the
-Privacy page offers a financial-data category, disclose it using the
-explanation in [`CHROME.md`](CHROME.md), Step 4.
+**Updating to 0.1.3:** wait until 0.1.0 is certified, then upload the new zip on
+the extension's **Packages** page (skip 0.1.1 and 0.1.2). From 0.1.1 onward the
+package ships English and Japanese, so Partner Center can show a Japanese
+listing. From 0.1.2 it also reads amounts in money fields to add or remove
+thousands commas. If the Privacy page offers a financial-data category,
+disclose it using the explanation in [`CHROME.md`](CHROME.md), Step 4. 0.1.3
+brings the new icon, so also replace the **Extension logo** with
+`store/assets/store-logo-300.png` and the promo tiles with their new versions.
 
 Two fields are read from the package and are **read-only** in Partner Center:
 
