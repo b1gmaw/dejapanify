@@ -31,13 +31,15 @@
 </header>
 <main class="prose">
 <h1>Privacy Policy — dejapanify</h1>
-<p><strong>Last updated: 17 September 2026</strong></p>
+<p><strong>Last updated: 29 September 2026</strong></p>
 <h2>The short version</h2>
 <p>dejapanify collects nothing, transmits nothing, and has no servers.</p>
 <p>Everything the extension does happens locally in your browser. There is no analytics, no telemetry, no crash reporting, no account, and no network code of any kind in the extension.</p>
 <h2>What the extension accesses</h2>
 <p>To convert form input between half-width (半角) and full-width (全角), the extension reads and rewrites the <strong>values of form fields on pages you visit</strong>, along with the surrounding labels and attributes that indicate which character width a field requires.</p>
 <p>This happens entirely in your browser's memory, at the moment you interact with the field. Field values are never stored, logged, or sent anywhere.</p>
+<p>Some fields are never read or changed at all, whatever the page asks for: <strong>passwords</strong>, <strong>payment card details</strong> (number, security code, expiry date, card-holder name), and <strong>bank account, branch and institution numbers</strong>. The extension leaves them exactly as you typed them.</p>
+<p>Because it reads what you type into other fields, such as names, addresses, phone numbers and email addresses, some stores describe the extension as *handling* personal information and website content. That handling is the on-device conversion described above and nothing more; none of it is collected.</p>
 <h2>What the extension stores</h2>
 <p>Only your own settings, kept in your browser's extension storage:</p>
 <ul><li>Which conversion types you have enabled</li><li>The confidence threshold</li><li>Whether the undo notice is shown</li><li>Lists of sites where you have enabled or disabled the extension</li></ul>

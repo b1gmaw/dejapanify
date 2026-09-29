@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "dejapanify",
+    "description": "Extension name. A brand name; keep it untranslated. Max 75 characters."
+  },
+  "extDescription": {
+    "message": "Auto-converts Japanese form fields between half-width and full-width (半角・全角) so forms stop rejecting correct input.",
+    "description": "Short description shown in the browser and at the top of store listings. Max 132 characters."
+  },
+  "actionTitle": {
+    "message": "dejapanify",
+    "description": "Tooltip on the toolbar button."
+  }
+}

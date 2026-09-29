@@ -27,16 +27,21 @@ const ZIP = flag('zip');
 const ONLY = value('target', null);
 const TARGETS = ONLY ? [ONLY] : ['chrome', 'firefox'];
 
-const DESCRIPTION =
-  'Auto-converts Japanese form fields between half-width and full-width (半角・全角) so forms stop rejecting correct input.';
+/**
+ * The name and description live in src/_locales/<lang>/messages.json rather
+ * than here. The Chrome Web Store only offers a store listing in the languages
+ * the package itself ships under _locales/, so without them there can be no
+ * Japanese listing — for an extension whose users read Japanese.
+ */
+const LOCALES = join(ROOT, 'src', '_locales');
 
 function manifest(target) {
   const base = {
     manifest_version: 3,
-    name: 'dejapanify',
+    name: '__MSG_extName__',
     version: pkg.version,
-    description: DESCRIPTION,
-    author: 'b1gmaw',
+    description: '__MSG_extDescription__',
+    default_locale: 'en',
     homepage_url: 'https://b1gmaw.github.io/dejapanify/',
     // storage is the only permission needed: content scripts declared in the
     // manifest are injected without a separate host permission grant.
@@ -48,7 +53,7 @@ function manifest(target) {
       128: 'icons/icon128.png',
     },
     action: {
-      default_title: 'dejapanify',
+      default_title: '__MSG_actionTitle__',
       default_popup: 'popup/popup.html',
       default_icon: {
         16: 'icons/icon16.png',
@@ -74,6 +79,11 @@ function manifest(target) {
   };
 
   if (target === 'firefox') {
+    // Firefox documents `author` as a plain string. Chrome's manifest reference
+    // does not document a string form at all, so it is left out of the
+    // Chromium build; both stores show the publisher from the developer
+    // account regardless.
+    base.author = 'b1gmaw';
     base.browser_specific_settings = {
       gecko: {
         id: 'dejapanify@maw.dev',
@@ -132,6 +142,7 @@ async function buildTarget(target) {
     generateIcons();
   }
   cpSync(icons, join(outdir, 'icons'), { recursive: true });
+  cpSync(LOCALES, join(outdir, '_locales'), { recursive: true });
 
   writeFileSync(
     join(outdir, 'manifest.json'),

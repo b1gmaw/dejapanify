@@ -27,21 +27,27 @@ function pngSize(file: string): { width: number; height: number } {
   return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
 }
 
-/** name -> [width, height], per Microsoft's published requirements. */
+/**
+ * name -> [width, height]. The same files go to Edge and the Chrome Web Store,
+ * and both publish identical requirements for these three.
+ */
 const REQUIRED: Record<string, [number, number]> = {
-  // Extension logo: 1:1, 300x300 recommended, 128x128 minimum.
+  // Edge extension logo: 1:1, 300x300 recommended, 128x128 minimum.
   'store-logo-300.png': [300, 300],
-  // Small promotional tile: must be exactly this size.
+  // Small promotional tile: exact size; required by Chrome, optional on Edge.
   'promo-tile-440x280.png': [440, 280],
-  // Large promotional tile: must be exactly this size.
+  // Marquee / large promotional tile: exact size, optional on both.
   'marquee-1400x560.png': [1400, 560],
 };
 
-/** Edge accepts screenshots at either of these sizes, and at most six. */
-const SCREENSHOT_SIZES = [
-  [1280, 800],
-  [640, 480],
-];
+/**
+ * Screenshots have to satisfy both stores at once:
+ *   Edge:   1280x800 or 640x480, at most 6
+ *   Chrome: 1280x800 or 640x400, at most 5
+ * 1280x800 is the only size both accept, and 5 is the tighter count.
+ */
+const SCREENSHOT_SIZES = [[1280, 800]];
+const MAX_SCREENSHOTS = 5;
 
 describe('store assets match what the stores require', () => {
   it('has been generated at all', () => {
@@ -59,16 +65,18 @@ describe('store assets match what the stores require', () => {
     expect(width).toBeGreaterThanOrEqual(128);
   });
 
-  it('has between one and six screenshots, each at an accepted size', () => {
+  it('has one to five screenshots, each at a size both stores accept', () => {
     const shots = readdirSync(ASSETS).filter((f) => f.startsWith('screenshot-') && f.endsWith('.png'));
     expect(shots.length).toBeGreaterThanOrEqual(1);
-    expect(shots.length, 'Edge accepts at most 6 screenshots').toBeLessThanOrEqual(6);
+    expect(shots.length, 'the Chrome Web Store accepts at most 5 screenshots').toBeLessThanOrEqual(
+      MAX_SCREENSHOTS,
+    );
 
     for (const shot of shots) {
       const { width, height } = pngSize(join(ASSETS, shot));
       expect(
         SCREENSHOT_SIZES.some(([w, h]) => w === width && h === height),
-        `${shot} is ${width}x${height}; Edge accepts only 1280x800 or 640x480`,
+        `${shot} is ${width}x${height}; only 1280x800 is accepted by both Edge and Chrome`,
       ).toBe(true);
     }
   });
@@ -100,10 +108,51 @@ describe('listing copy fits the store limits', () => {
     expect(japanese.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('keeps the manifest short description within Edge display limits', () => {
-    const manifest = JSON.parse(readFileSync(join(ROOT, 'dist', 'chrome', 'manifest.json'), 'utf8'));
-    // Edge shows the manifest description as the listing's short description.
-    expect(manifest.description.length).toBeGreaterThan(0);
-    expect(manifest.description.length).toBeLessThanOrEqual(132);
+});
+
+/**
+ * The manifest's name and description are __MSG_…__ placeholders resolved from
+ * _locales/, because the Chrome Web Store only offers a store listing in the
+ * languages the package ships. A missing key shows the raw placeholder text on
+ * the listing, so every placeholder must resolve in every shipped language.
+ */
+describe.each(['chrome', 'firefox'] as const)('%s package localisation', (target) => {
+  const dist = join(ROOT, 'dist', target);
+  const manifest = JSON.parse(readFileSync(join(dist, 'manifest.json'), 'utf8'));
+  const locales = readdirSync(join(dist, '_locales'));
+  const messages = (lang: string): Record<string, { message: string }> =>
+    JSON.parse(readFileSync(join(dist, '_locales', lang, 'messages.json'), 'utf8'));
+
+  /** Every __MSG_key__ placeholder anywhere in the manifest. */
+  const placeholders = [...JSON.stringify(manifest).matchAll(/__MSG_(\w+)__/g)].map((m) => m[1]!);
+
+  it('ships English and Japanese, with English as the default', () => {
+    expect(locales.sort()).toEqual(['en', 'ja']);
+    expect(manifest.default_locale).toBe('en');
+  });
+
+  it('uses placeholders for the strings the stores display', () => {
+    expect(placeholders).toEqual(expect.arrayContaining(['extName', 'extDescription']));
+  });
+
+  it.each(['en', 'ja'])('resolves every placeholder in %s', (lang) => {
+    const table = messages(lang);
+    for (const key of placeholders) {
+      expect(table[key]?.message, `${lang} is missing "${key}"`).toBeTruthy();
+    }
+  });
+
+  it.each(['en', 'ja'])('keeps the %s name and description within Chrome limits', (lang) => {
+    // Chrome's manifest reference: name at most 75 characters, description
+    // at most 132. The description doubles as the store's short description.
+    const table = messages(lang);
+    expect(table.extName!.message.length).toBeLessThanOrEqual(75);
+    expect(table.extDescription!.message.length).toBeGreaterThan(0);
+    expect(table.extDescription!.message.length).toBeLessThanOrEqual(132);
+  });
+
+  it('has a Japanese description that is actually Japanese', () => {
+    const ja = messages('ja').extDescription!.message;
+    expect([...ja].filter((c) => c >= '぀' && c <= '鿿').length).toBeGreaterThan(20);
   });
 });

@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "dejapanify",
+    "description": "Extension name. A brand name; keep it untranslated. Max 75 characters."
+  },
+  "extDescription": {
+    "message": "日本語フォームの半角・全角を自動で変換します。入力欄が求める文字幅に合わせて、正しい入力がエラーにならないようにします。",
+    "description": "Short description shown in the browser and at the top of store listings. Max 132 characters."
+  },
+  "actionTitle": {
+    "message": "dejapanify",
+    "description": "Tooltip on the toolbar button."
+  }
+}
