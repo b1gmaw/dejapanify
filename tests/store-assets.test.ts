@@ -87,6 +87,25 @@ describe('store assets match what the stores require', () => {
       expect([width, height], `icon${size}.png`).toEqual([size, size]);
     }
   });
+
+  it('uses the artwork in art/ for the package and the Edge logo', () => {
+    // The 128px icon is the artwork itself, not a re-render of it.
+    expect(
+      readFileSync(join(ROOT, 'public', 'icons', 'icon128.png')).equals(
+        readFileSync(join(ROOT, 'art', 'icon-128.png')),
+      ),
+    ).toBe(true);
+    expect(pngSize(join(ROOT, 'art', 'icon-300.png'))).toEqual({ width: 300, height: 300 });
+    expect(pngSize(join(ROOT, 'art', 'icon-128.png'))).toEqual({ width: 128, height: 128 });
+  });
+
+  it('keeps icon backgrounds transparent, so toolbars show through', () => {
+    // PNG colour type 6 is RGBA: the icons must carry an alpha channel.
+    for (const size of [16, 32, 48, 128]) {
+      const buf = readFileSync(join(ROOT, 'public', 'icons', `icon${size}.png`));
+      expect(buf[25], `icon${size}.png colour type`).toBe(6);
+    }
+  });
 });
 
 describe('listing copy fits the store limits', () => {

@@ -189,11 +189,11 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 371 tests
+npm test           # 373 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
-npm run icons      # regenerate the toolbar icons
+npm run icons      # rebuild the toolbar icons from the artwork in art/
 npm run assets     # regenerate the store listing images
 npm run site       # build the GitHub Pages site into docs/
 npm run demo       # serve the test form over http
@@ -206,10 +206,13 @@ built extension into a real headless Firefox via `web-ext`, opens the demo, and
 the page reports its own conversion results back. `npm run e2e:headed` shows the
 browser while it happens.
 
-Icons, store images and the ZIP container are all generated from code rather
-than checked in as binary artefacts or produced by an external tool. The build
-is deterministic — the same source always yields byte-identical packages, which
-Mozilla's reviewers rely on. See [`docs/REVIEWER_NOTES.md`](docs/REVIEWER_NOTES.md).
+The icon artwork lives in `art/` (a 300px and a 128px PNG). `npm run icons`
+scales it to the toolbar sizes with ImageMagick, and `npm run assets` embeds it
+in the store tiles. The results are committed, so an ordinary build needs no
+image tooling. The store images and the ZIP container are generated from code.
+The build is deterministic: the same source always yields the same package,
+which Mozilla's reviewers rely on. See
+[`docs/REVIEWER_NOTES.md`](docs/REVIEWER_NOTES.md).
 
 ### Layout
 

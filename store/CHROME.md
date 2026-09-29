@@ -10,15 +10,18 @@ too. Work down the page in order; every answer you paste is in its own block.
 > the data answers below are not "nothing", as they were for Edge. They describe
 > what dejapanify reads while converting, which is still collected by no one.
 
-## Updating to 0.1.2 (after 0.1.1 is approved)
+## Updating to 0.1.3 (after 0.1.1 is approved)
 
 1. Open the existing item in the developer dashboard → **Package** → upload
-   `dejapanify-0.1.2-chrome.zip`.
+   `dejapanify-0.1.3-chrome.zip`.
 2. **Privacy practices:** tick **Financial and payment information**, and paste
    its justification from Step 4 below. 0.1.2 reads amounts in money fields to
    add or remove thousands separators.
-3. **Store listing:** optionally swap in the updated descriptions from
-   [`listing.md`](listing.md), which mention the new behaviour.
+3. **Store listing:** replace the graphics with the new icon's versions: the
+   store icon (`public/icons/icon128.png`, if there's a field for it), the small
+   promo tile and the marquee from `store/assets/`. Optionally swap in the
+   updated descriptions from [`listing.md`](listing.md), which mention the
+   adaptive formatting.
 4. **Test instructions:** replace with the Step 6 text, which now includes the
    phone, amount and capitals fields.
 5. Submit for review.
@@ -29,12 +32,12 @@ too. Work down the page in order; every answer you paste is in its own block.
 
 ```bash
 npm ci
-npm run package        # writes web-ext-artifacts/dejapanify-0.1.2-chrome.zip
+npm run package        # writes web-ext-artifacts/dejapanify-0.1.3-chrome.zip
 ```
 
 Then `chrome://extensions` → **Developer mode** on → **Load unpacked** →
 `dist/chrome`, run `npm run demo`, and try the form. The zip is also attached to
-the v0.1.2 release on GitHub.
+the v0.1.3 release on GitHub.
 
 ---
 
@@ -60,7 +63,7 @@ registration screen:
 
 ## Step 2 — Upload
 
-**Add new item** → upload **`dejapanify-0.1.2-chrome.zip`**.
+**Add new item** → upload **`dejapanify-0.1.3-chrome.zip`**.
 
 The name and short description come from the package, per language, and can't
 be edited in the dashboard:
@@ -100,15 +103,14 @@ Copy from [`listing.md`](listing.md) → **Full description**:
 
 | Field | File | Size |
 |---|---|---|
-| Store icon | taken from the package (`icons/icon128.png`) | 128×128 |
+| Store icon | `public/icons/icon128.png` (upload it if the dashboard asks; otherwise the package's icon is used) | 128×128 |
 | Screenshots (4 of max 5) | `store/assets/screenshot-*.png` | 1280×800 |
 | Small promo tile (**required**) | `store/assets/promo-tile-440x280.png` | 440×280 |
 | Marquee promo tile (optional) | `store/assets/marquee-1400x560.png` | 1400×560 |
 
 Google recommends 96×96 of artwork inside the 128×128 icon, with 16px of
-transparent padding on each side. Ours fills the canvas, which is allowed but may
-look slightly larger than neighbouring icons. It's cosmetic and not a reason for
-rejection.
+transparent padding on each side. Ours has about 103×92 of artwork with roughly
+12px of transparent margin, close to that guideline.
 
 ### Additional fields
 
