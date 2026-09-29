@@ -215,27 +215,21 @@
     <div class="install">
 
       <div class="ibox" data-install="firefox">
-        <header><strong>Firefox</strong> <span class="badge warn">Not published yet</span></header>
+        <header><strong>Firefox</strong> <span class="badge">One click</span></header>
         <p class="note">
-          The Mozilla Add-ons listing is prepared but not yet submitted, so for now
-          Firefox installs from source. Requires Firefox 142 or newer.
+          Reviewed and approved by Mozilla. Install it from Firefox Add-ons, and updates
+          arrive automatically.
         </p>
-        <ol>
-          <li>Build it: <code>git clone https://github.com/b1gmaw/dejapanify.git</code>, then <code>npm install &amp;&amp; npm run build</code>.</li>
-          <li>Open <code>about:debugging#/runtime/this-firefox</code>.</li>
-          <li>Click <strong>Load Temporary Add-on</strong> and pick <code>dist/firefox/manifest.json</code>.</li>
-          <li>Try it with <code>npm run demo</code>.</li>
-        </ol>
-        <p class="note" style="margin-top:12px">
-          A temporary add-on is removed when Firefox closes, so repeat step 3 after a restart.
-        </p>
+        <p><a class="btn" id="STORE_URL_FIREFOX" href="https://addons.mozilla.org/firefox/addon/dejapanify/">Add to Firefox</a></p>
+        <p class="note">Requires Firefox 142 or newer.</p>
       </div>
 
       <div class="ibox" data-install="edge">
-        <header><strong>Microsoft Edge</strong> <span class="badge warn">Not published yet</span></header>
+        <header><strong>Microsoft Edge</strong> <span class="badge pending">In review</span></header>
         <p class="note">
-          The Edge Add-ons listing is prepared but not yet submitted. For now, follow the
-          Chromium instructions below — Edge loads unpacked extensions the same way.
+          Submitted to Microsoft Edge Add-ons and waiting for certification, which takes up
+          to seven business days. Until it's approved, Edge can load the extension the same
+          way as Chrome — follow the instructions below, using <code>edge://extensions</code>.
         </p>
       </div>
 

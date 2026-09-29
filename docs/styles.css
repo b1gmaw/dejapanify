@@ -150,6 +150,7 @@ table.signals td:last-child { white-space: nowrap; color: var(--accent); font-we
 .ibox .badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
   padding: 3px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .ibox .badge.warn { background: var(--bad-soft); color: var(--bad); }
+.ibox .badge.pending { background: var(--bg-alt); color: var(--muted); border: 1px solid var(--line); }
 .ibox ol { margin: 12px 0 0; padding-left: 20px; font-size: 14.5px; color: var(--muted); }
 .ibox ol li { margin-bottom: 6px; }
 .ibox pre {

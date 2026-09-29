@@ -129,4 +129,18 @@ describe('landing page content', () => {
     expect(prose).toContain('Developer mode');
     expect(panel.querySelector('.badge')!.textContent).toBe('Manual');
   });
+
+  it('sends Firefox users to the live Mozilla listing', () => {
+    // Locale-neutral on purpose: AMO redirects each visitor to their own
+    // language, so Japanese browsers land on the Japanese listing.
+    const button = document.querySelector<HTMLAnchorElement>('[data-install="firefox"] a.btn')!;
+    expect(button.getAttribute('href')).toBe('https://addons.mozilla.org/firefox/addon/dejapanify/');
+    expect(button.textContent).toBe('Add to Firefox');
+  });
+
+  it('never tells a visitor a live listing is unpublished', () => {
+    // Guards against the install page lagging behind the stores.
+    const firefox = document.querySelector('[data-install="firefox"]')!.textContent ?? '';
+    expect(firefox).not.toMatch(/not (yet )?(published|submitted)/i);
+  });
 });
