@@ -185,3 +185,58 @@ describe('regressions found by auditing real Japanese sites', () => {
     }
   });
 });
+
+describe('payment and banking fields are never touched', () => {
+  // Chrome Web Store policy counts data an extension merely handles on-device
+  // as data it must disclose. Staying out of these fields keeps financial and
+  // payment information out of that disclosure altogether.
+
+  it.each([
+    'cc-number', 'cc-csc', 'cc-exp', 'cc-exp-month', 'cc-name', 'billing cc-number',
+    'transaction-amount',
+  ])('ignores autocomplete="%s"', (autocomplete) => {
+    expect(detectField({ autocomplete, hintText: '半角数字で入力してください' })).toBeNull();
+  });
+
+  it.each([
+    ['card_number', ''],
+    ['cardno', ''],
+    ['cvc', ''],
+    ['cvv2', ''],
+    ['security_code', ''],
+    ['exp_month', ''],
+    ['account_number', ''],
+    ['iban', ''],
+    ['num', 'カード番号'],
+    ['num', 'クレジットカード番号'],
+    ['code', 'セキュリティコード'],
+    ['num', '口座番号'],
+    ['code', '支店コード'],
+    ['code', '金融機関コード'],
+  ])('ignores name=%s label=%s even when the page asks for 半角数字', (name, labelText) => {
+    // The strongest signals available still must not win: a digits pattern and
+    // an explicit 半角数字 instruction are exactly what card fields carry.
+    expect(
+      detectField({ name, labelText, pattern: '^[0-9]+$', hintText: '半角数字で入力してください' }),
+    ).toBeNull();
+  });
+
+  it('still converts an account holder name, which is a name and not a number', () => {
+    // 口座名義 / 振込名義 is the classic 半角カタカナ requirement.
+    const d = detectField({ name: 'holder', labelText: '口座名義', hintText: '半角カタカナでご入力ください' });
+    expect(d?.kind).toBe('katakana-half');
+  });
+
+  it.each(['tel', 'zip', 'email', 'member_no'])('still converts an ordinary %s field', (name) => {
+    expect(detectField({ name, hintText: '半角で入力してください' })).not.toBeNull();
+  });
+
+  it.each(['discard_reason', 'cardinal', 'success'])(
+    'does not mistake %s for a payment field',
+    (name) => {
+      // Word boundaries: "card" inside "discard" or "cardinal", and "cc"
+      // inside "success", are not payment fields.
+      expect(detectField({ name, hintText: '半角で入力してください' })).not.toBeNull();
+    },
+  );
+});

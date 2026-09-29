@@ -7,7 +7,7 @@
  */
 import { parseHintText } from './hints.js';
 import { analyzePattern } from './pattern.js';
-import { matchKeywords, AUTOCOMPLETE_MAP, INPUT_TYPE_MAP } from './keywords.js';
+import { matchKeywords, isPaymentField, AUTOCOMPLETE_MAP, INPUT_TYPE_MAP } from './keywords.js';
 import type { Detection, FieldKind, Signal, SignalSource } from './types.js';
 
 /** A plain, serializable snapshot of everything we know about one input. */
@@ -69,6 +69,14 @@ export function isConvertibleType(type: string): boolean {
 export function detectField(descriptor: Partial<FieldDescriptor>): Detection | null {
   const d: FieldDescriptor = { ...EMPTY_DESCRIPTOR, ...descriptor };
   if (!isConvertibleType(d.type)) return null;
+
+  // Payment and banking fields are excluded outright, before any scoring, so
+  // no combination of other signals (a 「半角数字」 hint, a digits pattern) can
+  // talk the extension into touching a card or account number.
+  const identifying = [d.name, d.id, d.className, d.labelText, d.placeholder, d.ariaLabel, d.hintText]
+    .filter(Boolean)
+    .join(' ');
+  if (isPaymentField(identifying, d.autocomplete)) return null;
 
   const signals: Signal[] = [];
   let stripSeparators = false;

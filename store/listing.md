@@ -78,6 +78,7 @@ hunch is worse than doing nothing.
 WHAT IT WILL NEVER DO
 
   • Touch password, hidden, file, date or checkbox inputs
+  • Read or change payment card fields or bank account numbers
   • Convert a field it could not identify
   • Convert meaning — 山田 never becomes ヤマダ, only width changes
   • Act while your IME is mid-composition
@@ -134,6 +135,7 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 しないこと
 
   • パスワード・非表示・ファイル・日付・チェックボックス欄の変更
+  • クレジットカード情報・銀行の口座番号の入力欄の読み取りや変更
   • 判別できなかった欄の変換
   • 意味の変換（山田がヤマダになることはありません。幅のみ変換）
   • IMEでの入力中の動作
@@ -165,7 +167,7 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 | Privacy policy (EN) | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
 | Source code | `https://github.com/b1gmaw/dejapanify` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | License | MIT |
 
 ## Assets

@@ -8,7 +8,7 @@ Certification takes up to seven business days to tell you otherwise.
 
 ```bash
 npm run package                 # writes web-ext-artifacts/dejapanify-<version>-chrome.zip
-unzip -d /tmp/dejapanify-edge web-ext-artifacts/dejapanify-0.1.0-chrome.zip
+unzip -d /tmp/dejapanify-edge web-ext-artifacts/dejapanify-<version>-chrome.zip
 npm run demo                    # serves the test form over http
 ```
 
@@ -28,20 +28,24 @@ faster than a company account.
 
 ## Step 2–3 — Create the extension and upload the package
 
-Upload **`dejapanify-0.1.0-chrome.zip`** — Edge takes the Chromium package.
+Upload **`dejapanify-<version>-chrome.zip`** — Edge takes the Chromium package.
+The first submission was 0.1.0; the current version is 0.1.1. Each package is
+published on the matching GitHub release, and a rebuild reproduces it byte for
+byte.
 
-This is the same artefact published on the
-[v0.1.0 release](https://github.com/b1gmaw/dejapanify/releases/tag/v0.1.0), and a
-rebuild reproduces it byte for byte.
+**Updating to 0.1.1:** wait until 0.1.0 is certified, then upload the new zip on
+the extension's **Packages** page. From 0.1.1 the package ships English and
+Japanese, so Partner Center can show a Japanese listing.
 
-Two fields are read from the manifest and are **read-only** in Partner Center:
+Two fields are read from the package and are **read-only** in Partner Center:
 
-| Field | Value |
-|---|---|
-| Extension name | `dejapanify` |
-| Short description | `Auto-converts Japanese form fields between half-width and full-width (半角・全角) so forms stop rejecting correct input.` |
+| Field | English | 日本語 (from 0.1.1) |
+|---|---|---|
+| Extension name | `dejapanify` | `dejapanify` |
+| Short description | `Auto-converts Japanese form fields between half-width and full-width (半角・全角) so forms stop rejecting correct input.` | `日本語フォームの半角・全角を自動で変換します。入力欄が求める文字幅に合わせて、正しい入力がエラーにならないようにします。` |
 
-Changing either means editing `scripts/build.mjs`, rebuilding and re-uploading.
+Changing either means editing `src/_locales/<lang>/messages.json`, rebuilding and
+re-uploading.
 
 ## Step 4 — Availability
 

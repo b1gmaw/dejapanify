@@ -37,7 +37,7 @@ export const KEYWORD_RULES: readonly KeywordRule[] = [
       '電話', '電話番号', 'でんわ', 'TEL', 'tel', 'telephone', 'phone', 'mobile',
       '携帯', '携帯番号', 'ケータイ', 'fax', 'FAX', 'ファックス',
       '郵便番号', '〒', 'zip', 'zipcode', 'postal', 'postcode', 'postal_code',
-      '番地', '口座番号', '会員番号', '社員番号', 'カード番号', 'card_number',
+      '番地', '会員番号', '社員番号',
       '年齢', 'age', '数量', 'quantity',
     ],
   },
@@ -69,8 +69,6 @@ export const AUTOCOMPLETE_MAP: Readonly<Partial<Record<string, FieldKind>>> = {
   'tel-local': 'digits-half',
   'tel-area-code': 'digits-half',
   'postal-code': 'digits-half',
-  'cc-number': 'digits-half',
-  'cc-csc': 'digits-half',
   email: 'alnum-half',
   url: 'alnum-half',
   username: 'alnum-half',
@@ -123,6 +121,42 @@ function termMatches(term: string, lower: string): boolean {
   // Japanese is written without word separators, so substring matching is the
   // only option there -- and is correct, since these terms are distinctive.
   return LATIN_TERM.test(term) ? latinBoundary(term).test(lower) : lower.includes(term.toLowerCase());
+}
+
+/**
+ * Payment and banking fields the extension deliberately never touches: card
+ * numbers, security codes, expiry dates, card-holder names, and bank account,
+ * branch and institution codes.
+ *
+ * Chrome Web Store policy counts data an extension merely handles on the device
+ * as data it must disclose. Leaving these fields alone keeps financial and
+ * payment information out of that disclosure entirely, which is the honest
+ * position for a tool whose whole promise is that it takes nothing from people.
+ *
+ * Account holder names (口座名義, 振込名義) are deliberately not listed: they are
+ * names, not numbers, and the classic 半角カタカナ requirement.
+ */
+const PAYMENT_TERMS: readonly string[] = [
+  // Cards
+  'card', 'cardnumber', 'card_number', 'card_no', 'cardno', 'cc', 'ccnum', 'ccnumber',
+  'cc_number', 'cc_num', 'cardholder', 'card_holder', 'cvc', 'cvv', 'cvv2', 'csc',
+  'securitycode', 'security_code', 'expiry', 'expiration', 'exp_month', 'exp_year',
+  'expdate', 'exp_date',
+  'クレジット', 'カード番号', 'カード名義', 'セキュリティコード', '有効期限',
+  // Bank accounts
+  'iban', 'bic', 'swift', 'routing', 'sort_code', 'account_number', 'account_no',
+  'accountnumber', 'bank_account', 'bankaccount',
+  '口座番号', '支店番号', '支店コード', '銀行コード', '金融機関コード',
+];
+
+/** True when any of the text identifying a field marks it as payment data. */
+export function isPaymentField(haystack: string, autocomplete = ''): boolean {
+  // Every card-related autocomplete token starts with "cc-" (cc-number,
+  // cc-csc, cc-exp, cc-name, ...), and transaction-* are payment amounts.
+  const tokens = autocomplete.toLowerCase().trim().split(/\s+/);
+  if (tokens.some((t) => t.startsWith('cc-') || t.startsWith('transaction-'))) return true;
+  const lower = haystack.toLowerCase();
+  return PAYMENT_TERMS.some((term) => termMatches(term, lower));
 }
 
 export function matchKeywords(haystack: string): { kind: FieldKind; confidence: number; evidence: string } | null {

@@ -1,6 +1,6 @@
 # Privacy Policy — dejapanify
 
-**Last updated: 17 September 2026**
+**Last updated: 29 September 2026**
 
 ## The short version
 
@@ -19,6 +19,16 @@ width a field requires.
 
 This happens entirely in your browser's memory, at the moment you interact with
 the field. Field values are never stored, logged, or sent anywhere.
+
+Some fields are never read or changed at all, whatever the page asks for:
+**passwords**, **payment card details** (number, security code, expiry date,
+card-holder name), and **bank account, branch and institution numbers**. The
+extension leaves them exactly as you typed them.
+
+Because it reads what you type into other fields, such as names, addresses,
+phone numbers and email addresses, some stores describe the extension as
+*handling* personal information and website content. That handling is the
+on-device conversion described above and nothing more; none of it is collected.
 
 ## What the extension stores
 

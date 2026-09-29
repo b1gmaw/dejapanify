@@ -62,6 +62,8 @@ Adding an explicit hint (「住所は全角で入力」) pushes it over the line
 ### What it will never do
 
 - Touch `type="password"`, `hidden`, `file`, checkboxes, radios or date pickers.
+- Read or change payment card fields (number, security code, expiry, holder name)
+  or bank account numbers — even when the page asks for 半角数字.
 - Convert a field it could not identify.
 - Convert *meaning*. 山田 never becomes ヤマダ; only character width changes.
 - Run while your IME is mid-composition.
@@ -76,13 +78,13 @@ plus a live demo you can try without installing anything.
 |---|---|
 | **Firefox** | **[Add to Firefox](https://addons.mozilla.org/firefox/addon/dejapanify/)** — one click from Mozilla Add-ons. Requires Firefox 142+. |
 | **Edge** | Submitted to Microsoft Edge Add-ons and **in review**. Until it's approved, install it manually as below, using `edge://extensions`. |
-| **Chrome, Brave, Vivaldi, Opera** | Manual install — Chrome allows no other route. |
+| **Chrome, Brave, Vivaldi, Opera** | A Chrome Web Store listing is being prepared. Until it's live, install manually as below. |
 
 ### Chrome and other Chromium browsers
 
-Chrome only permits installing extensions from the Chrome Web Store, and listing
-there carries a one-time fee this project has not paid. So these browsers need a
-manual install. Once, and it takes about two minutes:
+Chrome only permits one-click installs from the Chrome Web Store, and the
+listing there isn't live yet. Until it is, these browsers need a manual install.
+You do it once, and it takes about two minutes:
 
 1. Download the ZIP from [Releases](https://github.com/b1gmaw/dejapanify/releases/latest)
    and unzip it somewhere permanent — deleting the folder uninstalls the extension.
@@ -158,7 +160,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 239 tests
+npm test           # 281 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/

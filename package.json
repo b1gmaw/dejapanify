@@ -1,8 +1,8 @@
 {
   "name": "dejapanify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
-  "description": "Browser extension that fixes unintuitive Japanese web form UX, starting with half-width/full-width (\u534a\u89d2/\u5168\u89d2) auto-conversion.",
+  "description": "Browser extension that fixes unintuitive Japanese web form UX, starting with half-width/full-width (半角/全角) auto-conversion.",
   "license": "MIT",
   "type": "module",
   "scripts": {

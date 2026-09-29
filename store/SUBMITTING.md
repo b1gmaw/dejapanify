@@ -4,14 +4,28 @@
 
 | Store | Status | Listing |
 |---|---|---|
-| Firefox Add-ons | **Live** — v0.1.0 approved | https://addons.mozilla.org/firefox/addon/dejapanify/ |
-| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted | *listing URL appears once certified* |
-| Chrome Web Store | Not submitted — one-time US$5 fee | — |
+| Firefox Add-ons | **Live** — v0.1.0 approved; **v0.1.1 to upload as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
+| Microsoft Edge Add-ons | **In review** — v0.1.0 submitted; v0.1.1 to follow once certified | *listing URL appears once certified* |
+| Chrome Web Store | **Preparing** — v0.1.1, see [`CHROME.md`](CHROME.md) | — |
+
+**Current version: 0.1.1.** Compared with 0.1.0 it adds English and Japanese
+translations of the name and description, so stores can list it in Japanese, and
+it stops touching payment card and bank account fields.
 
 For a **new version**, bump `version` in `package.json`, run the checks and
 `npm run package` below, then upload the new zip to each live listing as an
 update rather than creating a new one. Firefox needs a fresh
 `npm run source-archive` alongside it every time.
+
+**Edge timing:** let 0.1.0 finish certification before uploading 0.1.1.
+Replacing a package that's still in review can restart certification.
+
+**Edge's data answers:** Edge 0.1.0 was declared as collecting nothing. Chrome
+counts data *handled on the device* as disclosable; Microsoft's documentation
+says "collects" and I couldn't confirm whether it applies the same rule. If
+certification queries it, answer as `CHROME.md` does: personal information
+typed into form fields and the text beside them are read on-device to convert
+the field, and nothing is stored or sent.
 
 ---
 
@@ -23,11 +37,11 @@ Settled details, so you don't have to decide mid-form:
 | | |
 |---|---|
 | Publisher / author | `b1gmaw` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Support | `https://github.com/b1gmaw/dejapanify/issues` (no support email) |
 | Privacy policy | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
-| Data collection | **None.** Pre-filled answers are in `listing.md`. |
+| Data collection | **None.** Pre-filled answers are in `listing.md`. Chrome also asks what is *handled* on-device; see `CHROME.md`. |
 
 Before either: build and package.
 
@@ -42,7 +56,7 @@ That produces:
 
 ```
 web-ext-artifacts/dejapanify-<version>-firefox.zip   ← Firefox
-web-ext-artifacts/dejapanify-<version>-chrome.zip    ← Edge (and Chrome, if ever)
+web-ext-artifacts/dejapanify-<version>-chrome.zip    ← Edge and Chrome
 ```
 
 ---
@@ -116,19 +130,17 @@ Two things in there are easy to get wrong and worth knowing before you start:
 
 ---
 
-## Chrome Web Store (not currently used)
+## Chrome Web Store (one-time registration fee)
 
-Deliberately skipped: it charges a one-time **US$5** developer registration fee.
+**→ [`CHROME.md`](CHROME.md)** — the full packet, in the dashboard's own order.
 
-Everything needed is nonetheless ready — `dejapanify-<version>-chrome.zip` is
-the correct package and `listing.md` covers the copy — so if you change your
-mind, submission is a short session rather than a project.
+One listing covers Chrome, Brave and Vivaldi, and Opera can install from it too.
+Two things differ from the other stores and are worth knowing before you start:
 
-Worth knowing: **Chrome, Brave, Vivaldi and Opera can only install extensions
-from the Chrome Web Store.** Chrome blocks installing from anywhere else. Those
-users currently have to install manually from source, which the landing page
-explains. The $5 is what unlocks one-click installation for the majority of
-desktop browser users.
+- **Data answers are not "none".** Google requires disclosing data an extension
+  handles even on the device. `CHROME.md` explains exactly what to tick and why.
+- **Expect an in-depth review.** Because the content script runs on all sites,
+  Google reviews more closely, and it takes longer.
 
 ---
 
@@ -137,7 +149,9 @@ desktop browser users.
 Firefox is done: its install button in `docs/index.html` (`STORE_URL_FIREFOX`)
 points at the live listing. When Edge is certified, replace the "In review"
 notice in the `data-install="edge"` box with an **Add to Edge** button carrying
-the listing URL, update the table above and the README, then redeploy:
+the listing URL. When Chrome approves, do the same for the
+`data-install="chromium"` box with **Add to Chrome**. Update the table above and
+the README each time, then redeploy:
 
 ```bash
 npm run site && git add docs && git commit -m "Point install buttons at the live listings"
