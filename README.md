@@ -105,7 +105,7 @@ plus a live demo you can try without installing anything.
 | Browser | How |
 |---|---|
 | **Firefox** | **[Add to Firefox](https://addons.mozilla.org/firefox/addon/dejapanify/)** — one click from Mozilla Add-ons. Requires Firefox 142+. |
-| **Edge** | Submitted to Microsoft Edge Add-ons and **in review**. Until it's approved, install it manually as below, using `edge://extensions`. |
+| **Edge** | **[Add to Edge](https://microsoftedge.microsoft.com/addons/detail/dejapanify/biccbmhjboockpdkogfcmhajkhfhpdcd)** — one click from Microsoft Edge Add-ons. |
 | **Chrome, Brave, Vivaldi, Opera** | Submitted to the Chrome Web Store and **in review**. Until it's approved, install manually as below. |
 
 ### Chrome and other Chromium browsers
@@ -189,7 +189,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 373 tests
+npm test           # 374 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/

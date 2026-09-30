@@ -137,6 +137,16 @@ describe('landing page content', () => {
     expect(panel.querySelector('.badge')!.textContent).toBe('Manual');
   });
 
+  it('sends Edge users to the live Edge Add-ons listing', () => {
+    const button = document.querySelector<HTMLAnchorElement>('[data-install="edge"] a.btn')!;
+    expect(button.getAttribute('href')).toBe(
+      'https://microsoftedge.microsoft.com/addons/detail/dejapanify/biccbmhjboockpdkogfcmhajkhfhpdcd',
+    );
+    expect(button.textContent).toBe('Add to Edge');
+    const text = document.querySelector('[data-install="edge"]')!.textContent ?? '';
+    expect(text).not.toMatch(/in review|not (yet )?(published|submitted)/i);
+  });
+
   it('sends Firefox users to the live Mozilla listing', () => {
     // Locale-neutral on purpose: AMO redirects each visitor to their own
     // language, so Japanese browsers land on the Japanese listing.
