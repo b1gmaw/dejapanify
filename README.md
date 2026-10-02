@@ -106,23 +106,14 @@ plus a live demo you can try without installing anything.
 |---|---|
 | **Firefox** | **[Add to Firefox](https://addons.mozilla.org/firefox/addon/dejapanify/)** — one click from Mozilla Add-ons. Requires Firefox 142+. |
 | **Edge** | **[Add to Edge](https://microsoftedge.microsoft.com/addons/detail/dejapanify/biccbmhjboockpdkogfcmhajkhfhpdcd)** — one click from Microsoft Edge Add-ons. |
-| **Chrome, Brave, Vivaldi, Opera** | Submitted to the Chrome Web Store and **in review**. Until it's approved, install manually as below. |
+| **Chrome, Brave, Vivaldi, Opera** | **[Add to Chrome](https://chromewebstore.google.com/detail/dejapanify/ccfbelnbflhknemlinkhlnlfefnnjhfl)** — one click from the Chrome Web Store. Brave and Vivaldi install from the same page; Opera needs its "Install Chrome Extensions" add-on first. |
 
-### Chrome and other Chromium browsers
+### Installing a release zip manually
 
-Chrome only permits one-click installs from the Chrome Web Store, and the
-listing there is still in review. Until it's approved, these browsers need a
-manual install.
-You do it once, and it takes about two minutes:
-
-1. Download the ZIP from [Releases](https://github.com/b1gmaw/dejapanify/releases/latest)
-   and unzip it somewhere permanent — deleting the folder uninstalls the extension.
-2. Open `chrome://extensions` (Brave: `brave://extensions`, Edge: `edge://extensions`).
-3. Enable **Developer mode**, top right.
-4. Click **Load unpacked** and select the unzipped folder.
-
-Chrome shows a "Disable developer mode extensions" notice on startup; that is its
-standard warning for anything not from its store.
+To try a version before it reaches the stores, download the chrome zip from
+[Releases](https://github.com/b1gmaw/dejapanify/releases/latest) and unzip it
+somewhere permanent. Then open `chrome://extensions` (or `edge://extensions`),
+enable **Developer mode**, click **Load unpacked**, and select the folder.
 
 ### From source
 
