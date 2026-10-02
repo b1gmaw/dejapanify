@@ -6,7 +6,7 @@
 |---|---|---|
 | Firefox Add-ons | **Live** — v0.1.2; **upload v0.1.3 as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
 | Microsoft Edge Add-ons | **Live**; upload v0.1.3 as an update if the listing isn't on it yet (skip 0.1.2) | https://microsoftedge.microsoft.com/addons/detail/dejapanify/biccbmhjboockpdkogfcmhajkhfhpdcd |
-| Chrome Web Store | **In review** — v0.1.1 submitted; v0.1.3 to follow once approved (skip 0.1.2), see [`CHROME.md`](CHROME.md) | *listing URL appears once approved* |
+| Chrome Web Store | **Live** (0.1.0 at launch); latest update in review, see [`CHROME.md`](CHROME.md) | https://chromewebstore.google.com/detail/dejapanify/ccfbelnbflhknemlinkhlnlfefnnjhfl |
 
 **Current version: 0.1.3.**
 

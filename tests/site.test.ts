@@ -128,13 +128,14 @@ describe('landing page content', () => {
     }
   });
 
-  it('is honest that Chromium browsers need a manual install', () => {
-    const panel = document.querySelector('[data-install="chromium"]')!;
-    // The phrase wraps across source lines, so compare on collapsed whitespace.
-    const prose = (panel.textContent ?? '').replace(/\s+/g, ' ');
-    expect(prose).toContain('Chrome Web Store');
-    expect(prose).toContain('Developer mode');
-    expect(panel.querySelector('.badge')!.textContent).toBe('Manual');
+  it('sends Chromium users to the live Chrome Web Store listing', () => {
+    const button = document.querySelector<HTMLAnchorElement>('[data-install="chromium"] a.btn')!;
+    expect(button.getAttribute('href')).toBe(
+      'https://chromewebstore.google.com/detail/dejapanify/ccfbelnbflhknemlinkhlnlfefnnjhfl',
+    );
+    expect(button.textContent).toBe('Add to Chrome');
+    const text = document.querySelector('[data-install="chromium"]')!.textContent ?? '';
+    expect(text).not.toMatch(/in review|not (yet )?(published|submitted)|Developer mode/i);
   });
 
   it('sends Edge users to the live Edge Add-ons listing', () => {
