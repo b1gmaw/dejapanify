@@ -252,7 +252,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 568 tests
+npm test           # 566 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
@@ -295,7 +295,7 @@ src/popup/     toolbar popup
 src/options/   settings page
 src/site/      the landing page's live demo (imports src/core directly)
 docs/          GitHub Pages site + reviewer notes
-store/         listing copy, privacy policy, generated store images
+store/         privacy policy, generated store images
 ```
 
 `src/core/` is deliberately DOM-free so the interesting logic can be tested

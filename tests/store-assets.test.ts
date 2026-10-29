@@ -108,27 +108,6 @@ describe('store assets match what the stores require', () => {
   });
 });
 
-describe('listing copy fits the store limits', () => {
-  const listing = readFileSync(join(ROOT, 'store', 'listing.md'), 'utf8');
-  const blocks = [...listing.matchAll(/```\n([\s\S]*?)```/g)].map((m) => m[1]!.trim());
-
-  it('carries a long description in both languages', () => {
-    // Edge requires 250-10,000 characters. The two long blocks are the English
-    // and Japanese descriptions.
-    const long = blocks.filter((b) => b.length >= 250);
-    expect(long.length, 'expected an English and a Japanese description').toBeGreaterThanOrEqual(2);
-    for (const b of long) expect(b.length).toBeLessThanOrEqual(10_000);
-  });
-
-  it('has a Japanese description, since the audience reads Japanese', () => {
-    const japanese = blocks.filter(
-      (b) => b.length >= 250 && [...b].filter((c) => c >= '぀' && c <= '鿿').length > 200,
-    );
-    expect(japanese.length).toBeGreaterThanOrEqual(1);
-  });
-
-});
-
 /**
  * The manifest's name and description are __MSG_…__ placeholders resolved from
  * _locales/, because the Chrome Web Store only offers a store listing in the
