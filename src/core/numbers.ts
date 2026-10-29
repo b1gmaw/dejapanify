@@ -11,7 +11,7 @@ import { AREA_CODE_LENGTH } from './jp-area-codes.js';
  * Non-geographic Japanese numbers, which have fixed groupings. Checked before
  * the landline table, since several share leading digits with area codes.
  */
-const FIXED_FORMATS: readonly { test: RegExp; groups: number[] }[] = [
+const FIXED_FORMATS: readonly { test: RegExp; groups: readonly number[] }[] = [
   // 0800 first: it would otherwise match the 080 mobile rule. The 0800 block is
   // freephone, so no mobile number starts with it.
   { test: /^0800\d{7}$/, groups: [4, 3, 4] },     // freephone (11 digits)
@@ -44,21 +44,27 @@ export function areaCodeLength(digits: string): number | undefined {
 }
 
 /**
- * 09012345678 -> 090-1234-5678, 0451234567 -> 045-123-4567,
- * 0467123456 -> 0467-12-3456. A ten-digit landline splits as area code,
- * local exchange, then four subscriber digits; the area code and exchange
- * together are always six digits.
+ * Group sizes for a Japanese phone number given as bare digits, or null when
+ * the grouping isn't certain. 09012345678 -> [3, 4, 4]; a ten-digit landline
+ * splits as area code, local exchange, then four subscriber digits, and the
+ * area code and exchange together are always six digits.
  */
-export function formatPhone(digits: string): string | null {
+export function phoneGroups(digits: string): readonly number[] | null {
   if (!/^\d+$/.test(digits)) return null;
   for (const { test, groups } of FIXED_FORMATS) {
-    if (test.test(digits)) return split(digits, groups);
+    if (test.test(digits)) return groups;
   }
   if (/^0\d{9}$/.test(digits)) {
     const area = areaCodeLength(digits);
-    if (area !== undefined && area >= 2 && area <= 5) return split(digits, [area, 6 - area, 4]);
+    if (area !== undefined && area >= 2 && area <= 5) return [area, 6 - area, 4];
   }
   return null;
+}
+
+/** 09012345678 -> 090-1234-5678, 0451234567 -> 045-123-4567, 0467123456 -> 0467-12-3456. */
+export function formatPhone(digits: string): string | null {
+  const groups = phoneGroups(digits);
+  return groups ? split(digits, groups) : null;
 }
 
 /** 1500001 -> 150-0001. */

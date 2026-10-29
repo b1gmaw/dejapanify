@@ -147,6 +147,23 @@
       results.push({ id: c.id, got: el.value, expect: c.expect, pass: el.value === c.expect });
     }
 
+    // Split fields: a whole value left in the first box is spread across them
+    // all. (A paste would be the natural test, but a page-made paste event
+    // carries no data in Firefox, so this drives the autofill path instead.)
+    const splits = [
+      { ids: ['tel1', 'tel2', 'tel3'], input: '090-1234-5678', expect: '090|1234|5678' },
+      { ids: ['sei', 'mei'], input: '\u5c71\u7530 \u592a\u90ce', expect: '\u5c71\u7530|\u592a\u90ce' },
+    ];
+    for (const c of splits) {
+      const first = document.getElementById(c.ids[0]);
+      first.focus();
+      first.value = c.input;
+      first.blur();
+      await new Promise((r) => setTimeout(r, 120));
+      const got = c.ids.map((id) => document.getElementById(id).value).join('|');
+      results.push({ id: c.ids[0], got, expect: c.expect, pass: got === c.expect });
+    }
+
     const verdict = {
       ok: active && results.every((r) => r.pass),
       active,
