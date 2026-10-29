@@ -70,6 +70,17 @@ Hyphens and commas are added or removed to match the page's example or
 instruction. Landline numbers are split correctly using the official Japanese
 area-code table.
 
+SPLIT BOXES AND FORM ERRORS
+
+  • Paste 山田 太郎 into a 姓 box, or 090-1234-5678 into the first of three
+    phone boxes, and every box is filled. A full phone box moves you on.
+  • When a form rejects you with only 「入力内容に誤りがあります」, a small panel
+    names the fields at fault and jumps to the first.
+  • Pressing 確認画面へ with a required field empty stops that one press and
+    shows which field. Press again to go on anyway.
+  • Optional, off by default: if a site empties the whole form when it rejects
+    it, offer to refill it from a copy kept in that tab for up to 30 minutes.
+
 HOW IT DECIDES
 
 It does not guess. It collects signals and converts only when they are
@@ -88,7 +99,7 @@ hunch is worse than doing nothing.
 
 WHAT IT WILL NEVER DO
 
-  • Touch password, hidden, file, date or checkbox inputs
+  • Convert password, hidden, file, date or checkbox inputs
   • Read or change payment card fields or bank account numbers
   • Convert a field it could not identify
   • Convert meaning — 山田 never becomes ヤマダ; only width changes, plus letter
@@ -110,7 +121,9 @@ PRIVACY
 
 No data collection. No network requests. No account. The extension contains no
 fetch, no XHR and no remote scripts — every conversion happens locally in your
-browser. Open source (MIT): https://github.com/b1gmaw/dejapanify
+browser. The optional form refill keeps its copy in that tab's session storage
+and deletes it within 30 minutes. Open source (MIT):
+https://github.com/b1gmaw/dejapanify
 ```
 
 **日本語:**
@@ -141,6 +154,18 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 ハイフンやカンマは、ページの記入例や注意書きに合わせて付けたり外したりします。
 固定電話の番号は、総務省の市外局番の情報にもとづいて正しい位置で区切ります。
 
+分かれた入力欄とエラー表示
+
+  • 「山田 太郎」を姓の欄に、「090-1234-5678」を3つに分かれた電話番号の
+    最初の欄に貼り付けると、すべての欄に入ります。電話番号の欄が埋まると
+    次の欄へ移ります。
+  • 「入力内容に誤りがあります」としか表示されないとき、どの項目に誤りが
+    あるかを小さなパネルに表示し、最初の項目へ移動します。
+  • 必須項目が空のまま「確認画面へ」を押すと、その1回だけ止めて項目を
+    示します。もう一度押せばそのまま進めます。
+  • 任意（初期設定はオフ）: エラー時にフォームを空にするサイトのために、
+    入力内容をそのタブに最長30分保存し、元に戻せるようにします。
+
 判定のしくみ
 
 推測はしません。次のような手がかりを集め、確実な場合にだけ変換します。
@@ -157,7 +182,7 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 
 しないこと
 
-  • パスワード・非表示・ファイル・日付・チェックボックス欄の変更
+  • パスワード・非表示・ファイル・日付・チェックボックス欄の変換
   • クレジットカード情報・銀行の口座番号の入力欄の読み取りや変更
   • 判別できなかった欄の変換
   • 意味の変換（山田がヤマダになることはありません。変えるのは文字幅と、
@@ -177,7 +202,8 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 プライバシー
 
 データ収集なし。通信なし。アカウント不要。fetch も XHR も外部スクリプトも
-含まれておらず、すべてブラウザ内で完結します。
+含まれておらず、すべてブラウザ内で完結します。任意の「入力内容の復元」は、
+写しをそのタブのセッションストレージに保存し、30分以内に削除します。
 オープンソース（MIT）: https://github.com/b1gmaw/dejapanify
 ```
 
@@ -192,7 +218,7 @@ dejapanify は、各入力欄が実際に求めている形式を読み取り、
 | Privacy policy (EN) | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |
 | Source code | `https://github.com/b1gmaw/dejapanify` |
-| Version | `0.1.3` |
+| Version | `0.2.0` |
 | License | MIT |
 
 ## Assets

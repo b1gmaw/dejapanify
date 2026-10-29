@@ -212,6 +212,12 @@ async function build() {
     }
   }
 
+  // The full test form, as the extension's own e2e run uses it, so reviewers
+  // and users can try every feature on a real page: docs/form/.
+  mkdirSync(join(DOCS, 'form'), { recursive: true });
+  cpSync(join(ROOT, 'public/demo.html'), join(DOCS, 'form', 'index.html'));
+  cpSync(join(ROOT, 'public/demo.js'), join(DOCS, 'form', 'demo.js'));
+
   // Tells GitHub Pages to serve the directory as-is rather than run Jekyll,
   // which would otherwise ignore files and folders beginning with an underscore.
   writeFileSync(join(DOCS, '.nojekyll'), '');

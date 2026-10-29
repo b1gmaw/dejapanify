@@ -4,11 +4,11 @@
 
 | Store | Status | Listing |
 |---|---|---|
-| Firefox Add-ons | **Live** — v0.1.2; **upload v0.1.3 as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
-| Microsoft Edge Add-ons | **Live**; upload v0.1.3 as an update if the listing isn't on it yet (skip 0.1.2) | https://microsoftedge.microsoft.com/addons/detail/dejapanify/biccbmhjboockpdkogfcmhajkhfhpdcd |
-| Chrome Web Store | **Live** (0.1.0 at launch); latest update in review, see [`CHROME.md`](CHROME.md) | https://chromewebstore.google.com/detail/dejapanify/ccfbelnbflhknemlinkhlnlfefnnjhfl |
+| Firefox Add-ons | **Live**; **upload v0.2.0 as an update** | https://addons.mozilla.org/firefox/addon/dejapanify/ |
+| Microsoft Edge Add-ons | **Live**; **upload v0.2.0 as an update**, see [`EDGE.md`](EDGE.md) | https://microsoftedge.microsoft.com/addons/detail/dejapanify/biccbmhjboockpdkogfcmhajkhfhpdcd |
+| Chrome Web Store | **Live**; **upload v0.2.0 as an update**, see [`CHROME.md`](CHROME.md) | https://chromewebstore.google.com/detail/dejapanify/ccfbelnbflhknemlinkhlnlfefnnjhfl |
 
-**Current version: 0.1.3.**
+**Current version: 0.2.0.**
 
 - **0.1.1** added English and Japanese translations of the name and description,
   so stores can list it in Japanese, and stopped touching payment card and bank
@@ -24,13 +24,35 @@
 - **0.1.3** replaces the icon with the new 全→半 artwork, everywhere: the
   toolbar, the extensions page, the store logo and tiles, and the website.
   Nothing else changes.
+- **0.2.0** adds two features beyond width conversion:
+  - **Split boxes:** a pasted 山田 太郎 or 090-1234-5678 fills 姓/名 or all three
+    phone boxes, and a full phone box moves focus to the next.
+  - **Form errors:** after a rejection, a panel names the fields at fault and
+    jumps to the first; a proceed press with an empty required field is
+    stopped once; late rejections (after a reload or a few seconds) are
+    caught; and an optional, **off-by-default** refill offers back a form the
+    site emptied.
+
+**Data disclosure for 0.2.0:** the optional refill keeps a copy of form input
+in the tab's session storage for up to 30 minutes, so the privacy policy (both
+languages) now has a "Form recovery" section, dated 29 October 2026. Nothing is
+collected or transmitted, so Firefox's and Edge's "no data collected" answers
+stand. Chrome's personally identifiable information category is already
+ticked; `CHROME.md` has the updated wording to paste.
+
+**Upload notes for 0.2.0** (Firefox **Version notes**, or anywhere a store asks
+what changed):
+
+```
+New: split name and phone boxes fill from one paste. When a form rejects your input, dejapanify now names the fields at fault and jumps to them, and can stop a submit when a required field is empty. Optional (off by default): offer to refill a form the site emptied. Test form: https://b1gmaw.github.io/dejapanify/form/
+```
 
 **Data disclosure from 0.1.2:** adding commas means reading amounts in money
 fields. Chrome counts that as handling financial information, so `CHROME.md`
 ticks it from 0.1.2 on. 0.1.3 changes nothing here.
 
-**New store images for 0.1.3:** after uploading the package, also replace the
-listing images, since the stores keep the old ones until you do:
+**Store images from 0.1.3:** if you haven't yet, replace the listing images
+after uploading the package, since the stores keep the old ones until you do:
 
 | Store | Replace |
 |---|---|
@@ -43,8 +65,8 @@ For a **new version**, bump `version` in `package.json`, run the checks and
 update rather than creating a new one. Firefox needs a fresh
 `npm run source-archive` alongside it every time.
 
-**Edge and Chrome timing:** let the version in review finish before uploading
-0.1.2. Replacing a package that's still in review can restart it.
+**Edge and Chrome timing:** let any version still in review finish before
+uploading 0.2.0. Replacing a package that's still in review can restart it.
 
 **Edge's data answers:** Edge 0.1.0 was declared as collecting nothing. Chrome
 counts data *handled on the device* as disclosable; Microsoft's documentation
@@ -63,7 +85,7 @@ Settled details, so you don't have to decide mid-form:
 | | |
 |---|---|
 | Publisher / author | `b1gmaw` |
-| Version | `0.1.3` |
+| Version | `0.2.0` |
 | Support | `https://github.com/b1gmaw/dejapanify/issues` (no support email) |
 | Privacy policy | `https://b1gmaw.github.io/dejapanify/privacy.html` |
 | Privacy policy (JA) | `https://b1gmaw.github.io/dejapanify/privacy.ja.html` |

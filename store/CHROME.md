@@ -10,20 +10,32 @@ too. Work down the page in order; every answer you paste is in its own block.
 > the data answers below are not "nothing", as they were for Edge. They describe
 > what dejapanify reads while converting, which is still collected by no one.
 
-## Updating to 0.1.3 (after 0.1.1 is approved)
+## Updating to 0.2.0
+
+0.2.0 adds split fields (姓/名, three-box phone numbers) and form-error help,
+including an optional, off-by-default form refill that keeps a copy of form
+input in the tab. The privacy answers change with it, so update them in the
+same submission.
 
 1. Open the existing item in the developer dashboard → **Package** → upload
-   `dejapanify-0.1.3-chrome.zip`.
-2. **Privacy practices:** tick **Financial and payment information**, and paste
-   its justification from Step 4 below. 0.1.2 reads amounts in money fields to
-   add or remove thousands separators.
-3. **Store listing:** replace the graphics with the new icon's versions: the
-   store icon (`public/icons/icon128.png`, if there's a field for it), the small
-   promo tile and the marquee from `store/assets/`. Optionally swap in the
-   updated descriptions from [`listing.md`](listing.md), which mention the
-   adaptive formatting.
-4. **Test instructions:** replace with the Step 6 text, which now includes the
-   phone, amount and capitals fields.
+   `dejapanify-0.2.0-chrome.zip`. If an earlier update is still in review, let
+   it finish first; replacing a package in review can restart the review.
+2. **Privacy practices:**
+   - **Single purpose:** replace with the new text in Step 4.
+   - **Permission justification — `storage`:** replace with the new text in
+     Step 4. It now mentions the optional form recovery.
+   - **Data usage:** keep **Personally identifiable information**, **Financial
+     and payment information** and **Website content** ticked. Paste the updated
+     explanations from Step 4. No new category is needed: the form-recovery
+     copy is personally identifiable information, which is already declared.
+   - The privacy policy URL is unchanged; the page itself was updated on
+     29 October 2026 to describe form recovery.
+3. **Store listing:** paste the updated descriptions from
+   [`listing.md`](listing.md), which add a "Split boxes and form errors"
+   section. If the 0.1.3 graphics were never uploaded, replace the store icon,
+   small promo tile and marquee too.
+4. **Test instructions:** replace with the Step 6 text, which adds the split
+   boxes and form-error steps.
 5. Submit for review.
 
 ---
@@ -32,12 +44,12 @@ too. Work down the page in order; every answer you paste is in its own block.
 
 ```bash
 npm ci
-npm run package        # writes web-ext-artifacts/dejapanify-0.1.3-chrome.zip
+npm run package        # writes web-ext-artifacts/dejapanify-0.2.0-chrome.zip
 ```
 
 Then `chrome://extensions` → **Developer mode** on → **Load unpacked** →
 `dist/chrome`, run `npm run demo`, and try the form. The zip is also attached to
-the v0.1.3 release on GitHub.
+the v0.2.0 release on GitHub.
 
 ---
 
@@ -63,7 +75,7 @@ registration screen:
 
 ## Step 2 — Upload
 
-**Add new item** → upload **`dejapanify-0.1.3-chrome.zip`**.
+**Add new item** → upload **`dejapanify-0.2.0-chrome.zip`**.
 
 The name and short description come from the package, per language, and can't
 be edited in the dashboard:
@@ -125,7 +137,7 @@ transparent padding on each side. Ours has about 103×92 of artwork with roughly
 ### Single purpose
 
 ```
-dejapanify converts text typed into Japanese web forms between half-width (半角) and full-width (全角) character forms, so that a field which accepts only one of them does not reject input that is otherwise correct. It reads each field's own attributes and the instructions printed beside it to determine which form that field requires, and rewrites the value accordingly when the user leaves the field. It does nothing else.
+dejapanify helps people fill in Japanese web forms without correct input being rejected. It converts text typed into a field between half-width (半角) and full-width (全角) character forms to match what that field requires, reading the field's own attributes and the instructions printed beside it. It spreads a pasted name or phone number across a form's split boxes (姓/名, three-part phone numbers). And when a form rejects input, it names the fields at fault and moves the user to them, optionally offering to refill a form the site emptied. Every feature serves that single purpose: getting a Japanese form accepted.
 ```
 
 ### Permission justification — `storage`
@@ -249,6 +261,19 @@ HOW TO SEE IT WORK (about one minute)
    Name in romaji: "yamada taro" becomes "YAMADA TARO" (the field asks for capitals)
    The お名前 field is deliberately left unchanged, because nothing on the page says which width it needs.
 7. Each conversion shows a small notice with a one-click undo. Ctrl+Z also works.
+
+SPLIT BOXES AND FORM ERRORS (new in 0.2.0)
+
+8. Open https://b1gmaw.github.io/dejapanify/form/ (a Japanese test form).
+9. Copy 090-1234-5678 and paste it into the first of the three 電話番号 boxes.
+   Expected: the three boxes fill with 090 / 1234 / 5678.
+10. Paste 山田 太郎 into the 姓 box. Expected: 姓 = 山田, 名 = 太郎.
+11. Leave お名前 empty and click 確認画面へ進む at the bottom.
+    Expected: the press is stopped once, a panel at the top right lists お名前 (and フリガナ) as 未入力, and the page scrolls to お名前.
+12. Click 確認画面へ進む again. This time it goes through. The test form imitates a site that checks input afterwards: 1.5 seconds later it rejects any empty 電話番号 boxes or an invalid メールアドレス, showing only 「入力内容に誤りがあります」 and red rows.
+    Expected: the panel names the rejected rows (for example 電話番号) and the page jumps to the first.
+13. Optional form refill (off by default): enable "Offer to refill a wiped form" on the extension's options page and reload the test form. Tick 「送信エラー時にページを再読み込みする」, fill in お名前, フリガナ and a few other fields but leave 電話番号 empty, and click 確認画面へ進む. The test form reloads with every field empty.
+    Expected: the panel offers 「前回の入力を復元」, and clicking it refills the fields.
 
 No account, credentials or payment is needed to test any feature.
 
