@@ -29,12 +29,21 @@ faster than a company account.
 ## Step 2–3 — Create the extension and upload the package
 
 Upload **`dejapanify-<version>-chrome.zip`** — Edge takes the Chromium package.
-The first submission was 0.1.0; the current version is 0.1.3. Each package is
+The first submission was 0.1.0; the current version is 0.2.0. Each package is
 published on the matching GitHub release, and a rebuild reproduces it byte for
 byte.
 
-**Updating to 0.1.3:** wait until 0.1.0 is certified, then upload the new zip on
-the extension's **Packages** page (skip 0.1.1 and 0.1.2). From 0.1.1 onward the
+**Updating to 0.2.0:** upload the new zip on the extension's **Packages** page,
+once any update already in certification has finished. 0.2.0 adds split fields
+and form-error help, and an optional, off-by-default form refill that keeps a
+copy of form input in the tab's session storage for up to 30 minutes. Paste the
+updated descriptions from [`listing.md`](listing.md), and the updated `storage`
+justification below. On the **Privacy** page nothing is collected or
+transmitted, so the answers stay "nothing"; if certification asks about the
+refill, quote the "Form recovery" section of the privacy policy.
+
+Earlier updates, for reference: wait until 0.1.0 is certified before the first
+update (skip 0.1.1 and 0.1.2). From 0.1.1 onward the
 package ships English and Japanese, so Partner Center can show a Japanese
 listing. From 0.1.2 it also reads amounts in money fields to add or remove
 thousands commas. If the Privacy page offers a financial-data category,
