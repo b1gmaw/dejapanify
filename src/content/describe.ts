@@ -86,6 +86,27 @@ function hintTextFor(el: EditableField): string {
   return clean(parts.join(' ')).slice(0, MAX_HINT_CHARS);
 }
 
+/**
+ * The text printed directly before a field, back to the previous field: the
+ * 「姓」 in 「姓 <input> 名 <input>」. Split fields often share one cell and one
+ * header, so this is the only text that tells them apart. Falls back to the
+ * cell before when the field sits alone in its own (「<th>姓</th><td><input>」).
+ */
+export function leadingTextFor(el: EditableField): string {
+  const before = (start: Node | null): string => {
+    let out = '';
+    for (let n = start; n; n = n.previousSibling) {
+      if (n instanceof Element && containsField(n)) break;
+      out = `${n.textContent ?? ''} ${out}`;
+      if (out.length > 40) break;
+    }
+    return clean(out);
+  };
+  const own = before(el.previousSibling);
+  if (own || !el.parentElement || el.previousElementSibling) return own.slice(-40);
+  return before(el.parentElement.previousSibling).slice(-40);
+}
+
 function containsField(node: Element): boolean {
   return node.querySelector('input, textarea, select') !== null || isEditableField(node);
 }

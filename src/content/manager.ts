@@ -13,6 +13,7 @@ import type { Detection, Settings } from '../core/types.js';
 import { describeField, isEditableField, isWritable, type EditableField } from './describe.js';
 import { setFieldValue, revertFieldValue, markComposing, isComposing } from './applier.js';
 import { showConversion, destroyIndicator } from './indicator.js';
+import { bindSplitPart } from './split.js';
 
 interface Bound {
   detection: Detection;
@@ -42,6 +43,8 @@ export function considerField(el: EditableField): void {
   if (!isWritable(el)) return;
 
   const descriptor = describeField(el);
+  // Before the width checks: a 姓 box too vague to convert can still be split.
+  bindSplitPart(el, descriptor, () => settings);
   const detection = detectField(descriptor);
   if (!detection) return;
   if (detection.confidence < settings.minConfidence) {

@@ -138,7 +138,7 @@ function latinBoundary(term: string): RegExp {
   return re;
 }
 
-function termMatches(term: string, lower: string): boolean {
+export function termMatches(term: string, lower: string): boolean {
   // Japanese is written without word separators, so substring matching is the
   // only option there -- and is correct, since these terms are distinctive.
   return LATIN_TERM.test(term) ? latinBoundary(term).test(lower) : lower.includes(term.toLowerCase());

@@ -94,6 +94,11 @@ function position(el: EditableField): void {
 
 /** Show the chip for a conversion that just happened. */
 export function showConversion(el: EditableField, kind: FieldKind, onUndo: () => void): void {
+  showNotice(el, `${FIELD_KIND_LABELS[kind].split(' (')[0]}に変換`, onUndo);
+}
+
+/** Show the chip beside `el` with `text` and an undo button. */
+export function showNotice(el: EditableField, text: string, onUndo: () => void): void {
   if (!ensureRoot() || !chip) return;
 
   chip.textContent = '';
@@ -104,7 +109,7 @@ export function showConversion(el: EditableField, kind: FieldKind, onUndo: () =>
 
   const label = document.createElement('span');
   label.className = 'label';
-  label.textContent = `${FIELD_KIND_LABELS[kind].split(' (')[0]}に変換`;
+  label.textContent = text;
 
   const undo = document.createElement('button');
   undo.type = 'button';

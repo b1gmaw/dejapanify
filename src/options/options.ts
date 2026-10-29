@@ -4,7 +4,7 @@ import { DEFAULT_SETTINGS, FIELD_KIND_LABELS, type FieldKind, type Settings } fr
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
-const toggles = ['enabled', 'japaneseOnly', 'showIndicator', 'convertOnInput', 'debug'] as const;
+const toggles = ['enabled', 'japaneseOnly', 'showIndicator', 'convertOnInput', 'splitFields', 'debug'] as const;
 type ToggleKey = (typeof toggles)[number];
 
 const kindsEl = $('kinds');
@@ -53,6 +53,7 @@ function collect(base: Settings): Settings {
     japaneseOnly: $<HTMLInputElement>('japaneseOnly').checked,
     showIndicator: $<HTMLInputElement>('showIndicator').checked,
     convertOnInput: $<HTMLInputElement>('convertOnInput').checked,
+    splitFields: $<HTMLInputElement>('splitFields').checked,
     debug: $<HTMLInputElement>('debug').checked,
     minConfidence: Number(confEl.value),
     blocklist: lines(blockEl.value),

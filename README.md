@@ -87,6 +87,33 @@ page's example. If none of them says, it keeps whatever separators you typed.
   email and URL fields. An example alone never decides case, since an ID shown
   as `ABC123` may still be case-sensitive.
 
+### Split fields
+
+Many forms take one value in several boxes: 姓 and 名, セイ and メイ, or a phone
+number as three boxes. Paste or autofill the whole value into the first box and
+it is spread across them:
+
+| Boxes | You paste into the first | Result |
+|---|---|---|
+| 姓 / 名 | 山田 太郎 | `山田` / `太郎` |
+| セイ / メイ | ヤマダ　タロウ | `ヤマダ` / `タロウ` |
+| 電話番号 ×3 | ０９０－１２３４－５６７８ | `090` / `1234` / `5678` |
+
+Typing a phone number moves you to the next box once one is full (by its
+`maxlength`). The number is divided by the same numbering plan as above, so
+`0467123456` becomes `0467` / `12` / `3456`.
+
+A value is only split when the boundary is certain:
+
+- A name needs a space between 姓 and 名; 山田太郎 is left as typed. A
+  romanised name is never split, since "Taro Yamada" may be given-name first.
+- A phone number the plan doesn't recognise, or one whose hyphens disagree
+  with it, is left as typed.
+- Nothing happens if another box already has a value, or if you paste into a
+  later box.
+
+Turn it off with **Fill split boxes** in the settings.
+
 ### What it will never do
 
 - Touch `type="password"`, `hidden`, `file`, checkboxes, radios or date pickers.
@@ -172,6 +199,7 @@ specifically so the browser's native undo stack survives.
 | Japanese pages only | on | Skips pages that aren't Japanese |
 | Show the undo chip | on | |
 | Convert while typing | **off** | Converts on each IME commit instead of on blur |
+| Fill split boxes | on | Spreads a pasted 姓 名 or phone number across split boxes |
 | Confidence threshold | 0.50 | Lower catches more fields, risks more mistakes |
 | Per-conversion switches | all on | Disable individual conversion types |
 | Block / allow lists | empty | Per-host, covers subdomains |
@@ -180,7 +208,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 374 tests
+npm test           # 465 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
@@ -215,6 +243,7 @@ src/core/      pure logic, no DOM — fully unit tested
   hints.ts       parses printed Japanese instructions
   pattern.ts     reads pattern attributes
   detect.ts      combines signals into one decision
+  split.ts       where a pasted name or phone number divides across boxes
 src/content/   DOM layer: descriptor extraction, IME-safe write-back, undo chip
 src/shared/    cross-browser storage shim
 src/popup/     toolbar popup
@@ -273,7 +302,7 @@ Used under the Government of Japan Standard Terms of Use (v1.0).
 
 Width conversion is the first module. Other Japanese-web friction worth fixing:
 
-- [ ] Auto-split and auto-join 姓/名 and 3-part phone number fields
+- [x] Auto-split and auto-join 姓/名 and 3-part phone number fields
 - [ ] Auto-fill 住所 from 郵便番号
 - [ ] Convert half-width katakana appearing anywhere it's clearly unintended
 - [ ] Suppress the 「Internet Explorer を推奨」 banners

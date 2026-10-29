@@ -35,7 +35,8 @@
   .status li { margin-bottom:4px; }
   .status code { background:rgba(0,0,0,.07); padding:1px 5px; border-radius:4px;
                  font:12px ui-monospace,Menlo,monospace; }
-  .tel { display:flex; gap:8px; align-items:center; }
+  .tel, .pair { display:flex; gap:8px; align-items:center; }
+  .pair span { white-space:nowrap; }
   footer { margin-top:20px; }
   footer button { font:inherit; padding:10px 20px; border:0; border-radius:8px;
                   background:var(--accent); color:#fff; cursor:pointer; }
@@ -72,6 +73,26 @@
       </td>
     </tr>
     <tr>
+      <th>お名前（姓・名）</th>
+      <td>
+        <div class="pair">
+          <span>姓</span><input type="text" name="sei" id="sei">
+          <span>名</span><input type="text" name="mei" id="mei">
+        </div>
+        <span class="note">「山田 太郎」と貼り付けると姓と名に分かれます</span>
+      </td>
+    </tr>
+    <tr>
+      <th>フリガナ（セイ・メイ）</th>
+      <td>
+        <div class="pair">
+          <span>セイ</span><input type="text" name="sei_kana" id="sei_kana">
+          <span>メイ</span><input type="text" name="mei_kana" id="mei_kana">
+        </div>
+        <span class="note">全角カタカナでご入力ください</span>
+      </td>
+    </tr>
+    <tr>
       <th>ふりがな</th>
       <td>
         <input type="text" name="name_hira" id="name_hira" placeholder="やまだ たろう">
@@ -95,7 +116,7 @@
           <span>-</span>
           <input type="tel" name="tel3" id="tel3" maxlength="4" style="width:80px">
         </div>
-        <span class="note">半角数字でご入力ください</span>
+        <span class="note">半角数字でご入力ください（番号をまとめて貼り付けると3つの欄に分かれます）</span>
       </td>
     </tr>
     <tr>

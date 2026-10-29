@@ -22,6 +22,9 @@ export type SignalSource =
 /** What a numeric field holds, which decides how separators are applied. */
 export type NumberRole = 'phone' | 'postal' | 'amount';
 
+/** Which piece of a value split across several boxes a field holds. */
+export type PartRole = 'phone' | 'family' | 'given' | 'family-kana' | 'given-kana';
+
 /**
  * What to do with hyphens or commas in a numeric field:
  *   strip — remove them (ハイフンなし, or an example with none)
@@ -101,6 +104,8 @@ export interface Settings {
   allowlist: string[];
   /** Per-kind master switches. */
   kinds: Record<FieldKind, boolean>;
+  /** Spread a pasted 姓 名 or phone number across split boxes. */
+  splitFields: boolean;
   /** Log detection decisions to the console. */
   debug: boolean;
 }
@@ -124,6 +129,7 @@ export const DEFAULT_SETTINGS: Settings = {
     'text-full': true,
     'text-half': true,
   },
+  splitFields: true,
   debug: false,
 };
 
