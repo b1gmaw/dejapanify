@@ -303,11 +303,18 @@ Used under the Government of Japan Standard Terms of Use (v1.0).
 Width conversion is the first module. Other Japanese-web friction worth fixing:
 
 - [x] Auto-split and auto-join 姓/名 and 3-part phone number fields
-- [ ] Auto-fill 住所 from 郵便番号
 - [ ] Convert half-width katakana appearing anywhere it's clearly unintended
 - [ ] Suppress the 「Internet Explorer を推奨」 banners
 - [ ] Unblock paste on fields that disable it (common on email confirm fields)
 - [ ] Make required-field errors say which field
+
+Dropped:
+
+- **Auto-fill 住所 from 郵便番号.** Most Japanese forms already do this
+  themselves (usually with ajaxzip3 or YubinBango), so it would fix little. Doing
+  it in the extension would also mean shipping Japan Post's roughly 120,000-row
+  postal-code table or looking addresses up online, and the extension makes no
+  network requests.
 
 ## Contributing
 
