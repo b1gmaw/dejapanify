@@ -5,8 +5,11 @@
  * without a browser, and so all the messy DOM archaeology lives in one place.
  */
 import type { FieldDescriptor } from '../core/detect.js';
+import { cleanLabel } from '../core/errors.js';
 
 export type EditableField = HTMLInputElement | HTMLTextAreaElement;
+/** Anything a form asks the user to fill or choose, for reading only. */
+export type FormControl = EditableField | HTMLSelectElement;
 
 /**
  * Hint text is capped: a field sitting inside a content-heavy table cell would
@@ -22,7 +25,7 @@ export function isEditableField(node: unknown): node is EditableField {
 }
 
 /** Text of every <label> associated with the element. */
-function labelTextFor(el: EditableField): string {
+function labelTextFor(el: FormControl): string {
   const parts: string[] = [];
 
   // labels is a live list covering both `for=` and wrapping labels.
@@ -70,20 +73,51 @@ function hintTextFor(el: EditableField): string {
   const container = el.closest('td, dd, li, .form-group, .form-item, .field, p');
   if (container) {
     parts.push(textExcludingFields(container));
-    // Table layouts put the label in the <th> or the preceding <td>.
-    const row = container.closest('tr');
-    if (row) {
-      const header = row.querySelector('th');
-      if (header) parts.push(header.textContent ?? '');
-    }
-    // Definition lists put it in the preceding <dt>.
-    if (container.tagName === 'DD') {
-      const dt = container.previousElementSibling;
-      if (dt?.tagName === 'DT') parts.push(dt.textContent ?? '');
-    }
+    parts.push(rowHeaderFor(el));
   }
 
   return clean(parts.join(' ')).slice(0, MAX_HINT_CHARS);
+}
+
+/**
+ * The heading of the form row a field sits in: the row's <th> in a table
+ * layout, or the preceding <dt> in a definition list.
+ */
+export function rowHeaderFor(el: Element): string {
+  const container = el.closest('td, dd, li, .form-group, .form-item, .field, p');
+  const row = container?.closest('tr');
+  const header = row?.querySelector('th');
+  if (header) return clean(header.textContent ?? '');
+  if (container?.tagName === 'DD') {
+    const dt = container.previousElementSibling;
+    if (dt?.tagName === 'DT') return clean(dt.textContent ?? '');
+  }
+  return '';
+}
+
+function legendFor(el: Element): string {
+  return clean(el.closest('fieldset')?.querySelector('legend')?.textContent ?? '');
+}
+
+/** The element holding one question of a form: its label, its fields, its error message. */
+export function formRowOf(el: Element): Element {
+  return el.closest('tr, dd, li, .form-group, .form-item, .field, fieldset') ?? el.parentElement ?? el;
+}
+
+/**
+ * What a person would call the field: 「お名前」, not "name1". A radio button's
+ * own label is one of its choices (男性), so its row heading comes first.
+ */
+export function displayNameFor(el: FormControl): string {
+  const choice = el instanceof HTMLInputElement && (el.type === 'radio' || el.type === 'checkbox');
+  const sources = choice
+    ? [rowHeaderFor(el), legendFor(el), labelTextFor(el)]
+    : [labelTextFor(el), rowHeaderFor(el), leadingTextFor(el), el.getAttribute('aria-label') ?? '', legendFor(el)];
+  for (const text of sources) {
+    const name = cleanLabel(text);
+    if (name) return name;
+  }
+  return el.name || el.id;
 }
 
 /**
@@ -92,7 +126,7 @@ function hintTextFor(el: EditableField): string {
  * header, so this is the only text that tells them apart. Falls back to the
  * cell before when the field sits alone in its own (「<th>姓</th><td><input>」).
  */
-export function leadingTextFor(el: EditableField): string {
+export function leadingTextFor(el: FormControl): string {
   const before = (start: Node | null): string => {
     let out = '';
     for (let n = start; n; n = n.previousSibling) {

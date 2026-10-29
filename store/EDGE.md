@@ -79,7 +79,7 @@ dejapanify converts text typed into Japanese web forms between half-width (半�
 **`storage`** — the only permission requested:
 
 ```
-Stores the user's own preferences: which conversion types are enabled, the confidence threshold before a field is converted, whether the undo notice is shown, and per-site enable/disable lists. No personal data is stored, and nothing derived from page content is stored.
+Stores only the user's own preferences: which conversion types and form helpers are enabled, the confidence threshold before a field is converted, whether the undo notice is shown, and per-site enable/disable lists. No personal data and nothing derived from page content is kept in extension storage. An optional form-recovery setting, off by default, keeps a temporary copy of form input in the web page's own sessionStorage rather than in extension storage; it is described in the privacy policy.
 ```
 
 **Content script host access** (the extension's content script matches all

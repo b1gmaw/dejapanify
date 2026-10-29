@@ -131,7 +131,7 @@ dejapanify converts text typed into Japanese web forms between half-width (半�
 ### Permission justification — `storage`
 
 ```
-Stores only the user's own preferences: which conversion types are enabled, the confidence threshold before a field is converted, whether the undo notice is shown, and per-site enable/disable lists. No personal data and nothing derived from page content is stored.
+Stores only the user's own preferences: which conversion types and form helpers are enabled, the confidence threshold before a field is converted, whether the undo notice is shown, and per-site enable/disable lists. No personal data and nothing derived from page content is kept in extension storage. An optional form-recovery setting, off by default, keeps a temporary copy of form input in the web page's own sessionStorage rather than in extension storage; it is described in the privacy policy.
 ```
 
 ### Host permission justification — content script on all sites
@@ -155,7 +155,9 @@ Under Google's on-device rule, tick exactly these three (for 0.1.2 onward):
 - **Personally identifiable information:** yes. To convert a field, the
   extension reads the value typed into it, and those fields include names,
   addresses, phone numbers and email addresses. The value is read and rewritten
-  in page memory and is never stored or sent.
+  in page memory and is never sent. It is stored only if the user turns on the
+  optional, off-by-default form recovery, which keeps a copy in that tab's
+  sessionStorage for at most 30 minutes.
 - **Financial and payment information:** yes, for amounts only. In number fields
   that hold money, such as a price, budget or annual income, it reads the amount
   to add or remove thousands separators to match the form (5,000,000 or
@@ -187,7 +189,7 @@ Leave these **unticked**, for the reasons given:
 | Authentication information | Password fields are excluded by input type. |
 | Health information, Personal communications, Location | Nothing of the kind is read. |
 | Web history | No browsing history is read or kept. The per-site lists hold only hostnames the user adds themselves. |
-| User activity | No keystrokes, clicks or scrolling are logged. The final field value is read once, when the user leaves the field. |
+| User activity | No keystrokes, clicks or scrolling are logged. The final field value is read once, when the user leaves the field. A press of a button such as 確認画面へ is noticed only to check the form at that moment, and is not recorded. |
 
 If the dashboard's category names differ from these, keep the same substance:
 disclose what's read from form fields and from the page, and nothing else.

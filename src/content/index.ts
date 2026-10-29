@@ -3,10 +3,15 @@ import { looksJapanese } from '../core/hints.js';
 import { loadSettings, watchSettings, isEnabledForHost, hostMatches } from '../shared/settings.js';
 import { ext } from '../shared/browser.js';
 import { observeFields, type Observer } from './observer.js';
-import { considerField, setSettings, sweepForm, sweepAll, getStats } from './manager.js';
+import { considerField, setSettings, sweepAll, getStats } from './manager.js';
 import { destroyIndicator } from './indicator.js';
+import { destroyPanel } from './panel.js';
+import { bindProceed, checkPage, onSubmit } from './proceed.js';
 
 let observer: Observer | null = null;
+let unbindProceed: (() => void) | null = null;
+/** Pages that render their form late get a second look for errors. */
+const RECHECK_MS = 1000;
 
 /**
  * Should we run here? Defaults to Japanese-looking pages only, because the
@@ -49,20 +54,23 @@ function start(): void {
   }
 
   // Capture phase: some sites call stopPropagation on submit handlers.
-  document.addEventListener(
-    'submit',
-    (event) => {
-      const form = event.target;
-      if (form instanceof HTMLFormElement) sweepForm(form);
-    },
-    true,
-  );
+  document.addEventListener('submit', onSubmit, true);
+  unbindProceed = bindProceed();
+
+  checkPage();
+  window.setTimeout(() => {
+    if (observer) checkPage();
+  }, RECHECK_MS);
 }
 
 function stop(): void {
   observer?.disconnect();
   observer = null;
+  document.removeEventListener('submit', onSubmit, true);
+  unbindProceed?.();
+  unbindProceed = null;
   destroyIndicator();
+  destroyPanel();
   try {
     delete document.documentElement.dataset[ACTIVE_MARKER];
   } catch {
