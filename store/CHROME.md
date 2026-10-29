@@ -238,44 +238,27 @@ two to agree.
 
 The extension deliberately does nothing on non-Japanese pages, so a reviewer on
 an ordinary English page will correctly see no effect. Paste this into the
-**Test instructions** tab:
+**Test instructions** tab. The field allows **500 words**; this is about 280,
+and stays under the limit even if each Japanese character is counted as a word.
+Keep it that way when editing.
 
 ```
-IMPORTANT: BY DESIGN THIS EXTENSION DOES NOTHING ON NON-JAPANESE PAGES.
+BY DESIGN, THIS EXTENSION DOES NOTHING ON NON-JAPANESE PAGES. It acts only on Japanese pages, and only on fields whose attributes or printed instructions say what they need. No account, credentials or payment is needed to test.
 
-Japanese web forms accept either half-width (hankaku) or full-width (zenkaku) characters, and usually only one of them. This extension detects which form a field requires and converts the user's text when they leave the field. To avoid interfering with the rest of the web, it only acts on pages identified as Japanese, and only on fields whose attributes or printed instructions identify the width required. On an ordinary English page, nothing happens. This is intended.
+1. WIDTH CONVERSION
+Open https://b1gmaw.github.io/dejapanify/ and scroll to "Try it right here" (it shows whether the extension is detected). Click "Fill with wrong widths", click the first field, then press Tab through the fields. Each value converts to the width or format its field asks for (for example full-width digits become half-width), and a small notice offers undo. The お名前 field is deliberately left alone.
 
-HOW TO SEE IT WORK (about one minute)
+2. SPLIT BOXES
+Open https://b1gmaw.github.io/dejapanify/form/
+Paste 090-1234-5678 into the first of the three phone boxes: all three fill (090 / 1234 / 5678).
+Paste 山田 太郎 into the 姓 box: both name boxes fill.
 
-1. Install the extension.
-2. Open https://b1gmaw.github.io/dejapanify/
-3. Scroll to "Try it right here". A notice there says whether the extension is detected.
-4. Click "Fill with wrong widths".
-5. Click into the first field (labelled フリガナ), then press Tab.
-   Expected: "やまだ たろう" becomes "ヤマダ　タロウ".
-6. Tab through the rest. Expected:
-   Postal code: "１５０－０００１" becomes "1500001"
-   Email: "ｅｘａｍｐｌｅ＠ｍａｉｌ．ｊｐ" becomes "example@mail.jp"
-   Mobile: "０９０１２３４５６７８" becomes "090-1234-5678" (hyphens added to match the field's example)
-   Annual income: "６０００００００" becomes "60,000,000" (commas added to match the field's example)
-   Name in romaji: "yamada taro" becomes "YAMADA TARO" (the field asks for capitals)
-   The お名前 field is deliberately left unchanged, because nothing on the page says which width it needs.
-7. Each conversion shows a small notice with a one-click undo. Ctrl+Z also works.
+3. FORM ERRORS (same page)
+Leave お名前 empty and click the button at the bottom. The click is stopped once, a panel lists the empty required fields, and the page scrolls to the first. Click again: it goes through.
+Like many real sites, the test form then rejects the input 1.5 seconds later with only a vague message. The panel names the rejected fields (for example the phone row, if empty) and jumps to the first.
 
-SPLIT BOXES AND FORM ERRORS (new in 0.2.0)
-
-8. Open https://b1gmaw.github.io/dejapanify/form/ (a Japanese test form).
-9. Copy 090-1234-5678 and paste it into the first of the three 電話番号 boxes.
-   Expected: the three boxes fill with 090 / 1234 / 5678.
-10. Paste 山田 太郎 into the 姓 box. Expected: 姓 = 山田, 名 = 太郎.
-11. Leave お名前 empty and click 確認画面へ進む at the bottom.
-    Expected: the press is stopped once, a panel at the top right lists お名前 (and フリガナ) as 未入力, and the page scrolls to お名前.
-12. Click 確認画面へ進む again. This time it goes through. The test form imitates a site that checks input afterwards: 1.5 seconds later it rejects any empty 電話番号 boxes or an invalid メールアドレス, showing only 「入力内容に誤りがあります」 and red rows.
-    Expected: the panel names the rejected rows (for example 電話番号) and the page jumps to the first.
-13. Optional form refill (off by default): enable "Offer to refill a wiped form" on the extension's options page and reload the test form. Tick 「送信エラー時にページを再読み込みする」, fill in お名前, フリガナ and a few other fields but leave 電話番号 empty, and click 確認画面へ進む. The test form reloads with every field empty.
-    Expected: the panel offers 「前回の入力を復元」, and clicking it refills the fields.
-
-No account, credentials or payment is needed to test any feature.
+4. OPTIONAL REFILL (off by default)
+Turn on "Offer to refill a wiped form" in the extension's options and reload the form. Tick the checkbox near the top that reloads the page on error, fill in a few fields, leave the phone boxes empty, and submit. The page reloads empty, and the panel offers to restore the input.
 
 Source: https://github.com/b1gmaw/dejapanify
 Privacy policy: https://b1gmaw.github.io/dejapanify/privacy.html
