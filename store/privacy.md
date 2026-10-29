@@ -1,6 +1,6 @@
 # Privacy Policy — dejapanify
 
-**Last updated: 29 September 2026**
+**Last updated: 29 October 2026**
 
 ## The short version
 
@@ -18,7 +18,14 @@ along with the surrounding labels and attributes that indicate which character
 width a field requires.
 
 This happens entirely in your browser's memory, at the moment you interact with
-the field. Field values are never stored, logged, or sent anywhere.
+the field. Field values are never logged or sent anywhere, and are not stored
+unless you switch on form recovery, described below.
+
+To point out which field a form rejected, it also reads which fields the page
+marks as required or as errors, and the error messages the page shows. It does
+this when you press a button that moves the form on, such as 確認画面へ or 次へ,
+and when a page loads already showing errors. It notices that press only to
+check the form at that moment; clicks are not recorded.
 
 Some fields are never read or changed at all, whatever the page asks for:
 **passwords**, **payment card details** (number, security code, expiry date,
@@ -43,6 +50,8 @@ Only your own settings, kept in your browser's extension storage:
 - Which conversion types you have enabled
 - The confidence threshold
 - Whether the undo notice is shown
+- Which form helpers are switched on (naming rejected fields, checking before
+  proceeding, refilling a wiped form)
 - Lists of sites where you have enabled or disabled the extension
 
 If your browser has extension sync turned on, your browser syncs these settings
@@ -52,9 +61,33 @@ sync, not ours — the extension author has no access to it and receives nothing
 You can erase all of it at any time by removing the extension, or with **Reset
 to defaults** on the settings page.
 
+### Form recovery (off unless you turn it on)
+
+Some sites empty the whole form when they reject it. If you switch on **Offer to
+refill a wiped form** in the settings, then each time you press a button such as
+確認画面へ or 次へ, the extension keeps a copy of the fields you filled in, so it
+can offer them back if the site wipes them.
+
+- **Where:** in that website's session storage, for that tab only. Not in the
+  extension's own storage, never synced, never sent anywhere.
+- **What is left out:** passwords, payment card and bank details, one-time
+  codes, CAPTCHA answers, マイナンバー and hidden fields are never copied.
+- **How long:** deleted when you restore it or dismiss the offer, after 30
+  minutes, when a page says your application is complete, or when you close the
+  tab, whichever comes first.
+- **Who can see it:** scripts running on that website, including any analytics
+  or advertising scripts it loads, can read session storage while the copy
+  exists. They can already read the same values from the form itself, but the
+  copy keeps them readable for up to 30 minutes after the site emptied the form.
+  If that matters to you, leave this setting off.
+
+The setting is off by default.
+
 ## What is never collected
 
-To be explicit, the extension does **not** collect, transmit or store:
+To be explicit, the extension does **not** collect or transmit any of the
+following, and apart from the optional form recovery above, it does not store
+any of it either:
 
 - Anything you type into forms
 - Page contents, URLs or browsing history

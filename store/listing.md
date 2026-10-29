@@ -216,9 +216,12 @@ Stores ask why each permission is needed. Answers:
 
 **`storage`**
 
-> Stores the user's own preferences: which conversion types are enabled, the
-> confidence threshold, and per-site enable/disable lists. No personal data and
-> nothing derived from page content is stored.
+> Stores the user's own preferences: which conversion types and form helpers
+> are enabled, the confidence threshold, and per-site enable/disable lists. No
+> personal data and nothing derived from page content is kept in extension
+> storage. An optional form-recovery setting, off by default, keeps a temporary
+> copy of form input in the web page's own sessionStorage instead; the privacy
+> policy describes it.
 
 **Content script on `<all_urls>`**
 
@@ -269,6 +272,8 @@ stay in sync with this listing. It is asserted by the test suite.
 > (which conversions are enabled, a confidence threshold, and per-site
 > enable/disable lists). It declares no host permissions and has no background
 > script. Form values are read and rewritten in page memory at the moment the
-> user leaves a field, and are never stored or transmitted. The package contains
+> user leaves a field, and are never transmitted. They are stored only if the
+> user turns on the off-by-default form recovery, which keeps a copy in that
+> tab's sessionStorage for at most 30 minutes. The package contains
 > no third-party code: `package.json` declares no runtime dependencies, and
 > everything in the build output comes from the project's own source.

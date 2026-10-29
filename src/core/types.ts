@@ -106,6 +106,15 @@ export interface Settings {
   kinds: Record<FieldKind, boolean>;
   /** Spread a pasted 姓 名 or phone number across split boxes. */
   splitFields: boolean;
+  /** After a rejected proceed, list the problem fields by name and jump to the first. */
+  errorHelper: boolean;
+  /** Stop the first proceed when a field is certainly wrong by the page's own rules. */
+  preflight: boolean;
+  /**
+   * Keep a copy of the form in the tab's sessionStorage and offer to refill it
+   * if the site wipes it. Off by default: it stores what the user typed.
+   */
+  restoreInput: boolean;
   /** Log detection decisions to the console. */
   debug: boolean;
 }
@@ -130,6 +139,9 @@ export const DEFAULT_SETTINGS: Settings = {
     'text-half': true,
   },
   splitFields: true,
+  errorHelper: true,
+  preflight: true,
+  restoreInput: false,
   debug: false,
 };
 

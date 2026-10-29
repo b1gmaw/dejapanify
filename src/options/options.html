@@ -18,6 +18,9 @@
     <label class="check"><input type="checkbox" id="showIndicator"><span><strong>Show the undo chip</strong><em>Display a small notice with an undo button after converting.</em></span></label>
     <label class="check"><input type="checkbox" id="convertOnInput"><span><strong>Convert while typing</strong><em>Convert after each IME commit instead of waiting for you to leave the field. Faster, but can interfere with multi-segment IME editing.</em></span></label>
     <label class="check"><input type="checkbox" id="splitFields"><span><strong>Fill split boxes</strong><em>Pasting 山田 太郎 into a 姓 box or 090-1234-5678 into the first phone box fills every box, and a full phone box moves you to the next.</em></span></label>
+    <label class="check"><input type="checkbox" id="errorHelper"><span><strong>Name the fields a form rejects</strong><em>When a form says only 「入力内容に誤りがあります」, list the fields at fault and jump to the first.</em></span></label>
+    <label class="check"><input type="checkbox" id="preflight"><span><strong>Check before proceeding</strong><em>When you press 確認画面へ or 次へ with a required field empty, or a value the form's own rules reject, stop that press and show which field. Press again to go on anyway.</em></span></label>
+    <label class="check"><input type="checkbox" id="restoreInput"><span><strong>Offer to refill a wiped form</strong><em>Off by default. Keeps a copy of what you typed in this tab's session storage when you press proceed, and offers it back if the site empties the form. Never saves passwords, payment details or one-time codes. Deleted after 30 minutes, once used, or when the tab closes. Scripts on that site can read the copy while it exists.</em></span></label>
     <label class="check"><input type="checkbox" id="debug"><span><strong>Debug logging</strong><em>Log every detection decision to the page console.</em></span></label>
   </section>
 

@@ -164,6 +164,26 @@
       results.push({ id: c.ids[0], got, expect: c.expect, pass: got === c.expect });
     }
 
+    // Pre-flight: お名前 is 必須 and empty, so the first press of 確認画面へ is
+    // stopped and the field is jumped to.
+    const submit = document.querySelector('#form button[type="submit"]');
+    const name = document.getElementById('name');
+    const tel1 = document.getElementById('tel1');
+    const at = () => (document.activeElement && document.activeElement.id) || '(none)';
+    name.value = '';
+    submit.click();
+    await new Promise((r) => setTimeout(r, 300));
+    const stopped = name.hasAttribute('data-dejapanify-problem') && document.activeElement === name;
+    results.push({ id: 'preflight', got: `focus ${at()}`, expect: 'focus name', pass: stopped });
+
+    // Late rejection: the second press goes through, the "server" rejects the
+    // empty phone boxes 1.5s later, and the rejected row is named and jumped to.
+    for (const id of ['tel1', 'tel2', 'tel3']) document.getElementById(id).value = '';
+    submit.click();
+    await new Promise((r) => setTimeout(r, 2700));
+    const caught = tel1.hasAttribute('data-dejapanify-problem') && document.activeElement === tel1;
+    results.push({ id: 'late', got: `focus ${at()}`, expect: 'focus tel1', pass: caught });
+
     const verdict = {
       ok: active && results.every((r) => r.pass),
       active,
@@ -200,14 +220,56 @@
     document.getElementById('result').style.display = 'none';
   });
 
+  // --- a site that rejects late ----------------------------------------------
+  // Real forms often accept 確認画面へ and only reject the input afterwards,
+  // with a vague message. This imitates that: the "server" answers after 1.5s,
+  // marks the rows it dislikes without saying why, and -- if asked -- reloads
+  // the page with the form wiped, as many sites do.
+  const REJECT_DELAY_MS = 1500;
+  const ROWS = { tel: 'tel1', email: 'email' };
+
+  function serverErrors() {
+    const errors = [];
+    if (['tel1', 'tel2', 'tel3'].some((id) => document.getElementById(id).value === '')) errors.push('tel');
+    if (!/^[\x21-\x7e]+@[\x21-\x7e]+\.[a-z]+$/i.test(document.getElementById('email').value)) errors.push('email');
+    return errors;
+  }
+
+  function showErrors(errors) {
+    const banner = document.getElementById('form-error');
+    banner.textContent = '入力内容に誤りがあります。';
+    banner.hidden = false;
+    for (const row of document.querySelectorAll('tr.has-error')) row.classList.remove('has-error');
+    for (const key of errors) {
+      const field = document.getElementById(ROWS[key]);
+      if (field) field.closest('tr').classList.add('has-error');
+    }
+  }
+
+  const reloaded = params.get('errors');
+  if (reloaded) showErrors(reloaded.split(',').filter((k) => k in ROWS));
+
   document.getElementById('form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const out = [];
-    for (const id of Object.keys(SAMPLES)) {
-      const el = document.getElementById(id);
-      if (el) out.push(`${id.padEnd(12)} = ${JSON.stringify(el.value)}`);
-    }
     const result = document.getElementById('result');
-    result.textContent = '送信値:\n' + out.join('\n');
-    result.style.display = 'block';
+    result.style.display = 'none';
+    setTimeout(() => {
+      const errors = serverErrors();
+      if (errors.length > 0) {
+        if (document.getElementById('reload-on-error').checked) {
+          location.search = `?errors=${errors.join(',')}`;
+        } else {
+          showErrors(errors);
+        }
+        return;
+      }
+      document.getElementById('form-error').hidden = true;
+      const out = [];
+      for (const id of Object.keys(SAMPLES)) {
+        const el = document.getElementById(id);
+        if (el) out.push(`${id.padEnd(12)} = ${JSON.stringify(el.value)}`);
+      }
+      result.textContent = '送信値:\n' + out.join('\n');
+      result.style.display = 'block';
+    }, REJECT_DELAY_MS);
   });

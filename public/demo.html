@@ -31,6 +31,11 @@
   .status-checking { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
   .status-active   { background:#f0fdf4; border-color:#86efac; color:#166534; }
   .status-inactive { background:#fef2f2; border-color:#fca5a5; color:#991b1b; }
+  .form-error { background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; border-radius:8px;
+                padding:10px 14px; margin-bottom:14px; font-weight:600; }
+  tr.has-error th, tr.has-error td { background:#fef2f2; }
+  tr.has-error input { border-color:#dc2626; }
+  .seed label { display:block; margin-top:8px; }
   .status ol { margin:8px 0 0; padding-left:20px; }
   .status li { margin-bottom:4px; }
   .status code { background:rgba(0,0,0,.07); padding:1px 5px; border-radius:4px;
@@ -57,9 +62,11 @@
   <div class="seed">
     「わざと間違った幅」で入力欄を埋めます。フォーカスを外す（Tab キー）と自動変換されます。
     <br><button type="button" id="seed">サンプル入力を挿入</button>
+    <label><input type="checkbox" id="reload-on-error" style="width:auto"> 送信エラー時にページを再読み込みする（入力内容が消えるサイトの再現）</label>
   </div>
 
   <form id="form">
+  <div id="form-error" class="form-error" role="alert" hidden></div>
   <table>
     <tr>
       <th>お名前<span class="req">必須</span></th>

@@ -31,23 +31,37 @@
 </header>
 <main class="prose">
 <h1>Privacy Policy — dejapanify</h1>
-<p><strong>Last updated: 29 September 2026</strong></p>
+<p><strong>Last updated: 29 October 2026</strong></p>
 <h2>The short version</h2>
 <p>dejapanify collects nothing, transmits nothing, and has no servers.</p>
 <p>Everything the extension does happens locally in your browser. There is no analytics, no telemetry, no crash reporting, no account, and no network code of any kind in the extension.</p>
 <h2>What the extension accesses</h2>
 <p>To convert form input between half-width (半角) and full-width (全角), the extension reads and rewrites the <strong>values of form fields on pages you visit</strong>, along with the surrounding labels and attributes that indicate which character width a field requires.</p>
-<p>This happens entirely in your browser's memory, at the moment you interact with the field. Field values are never stored, logged, or sent anywhere.</p>
+<p>This happens entirely in your browser's memory, at the moment you interact with the field. Field values are never logged or sent anywhere, and are not stored unless you switch on form recovery, described below.</p>
+<p>To point out which field a form rejected, it also reads which fields the page marks as required or as errors, and the error messages the page shows. It does this when you press a button that moves the form on, such as 確認画面へ or 次へ, and when a page loads already showing errors. It notices that press only to check the form at that moment; clicks are not recorded.</p>
 <p>Some fields are never read or changed at all, whatever the page asks for: <strong>passwords</strong>, <strong>payment card details</strong> (number, security code, expiry date, card-holder name), and <strong>bank account, branch and institution numbers</strong>. The extension leaves them exactly as you typed them.</p>
 <p>In number fields that hold money, such as a price, a budget or an annual income, it reads the amount you typed in order to add or remove thousands separators (5,000,000 or 5000000) to match the form. It never reads card numbers, security codes or bank account numbers.</p>
 <p>Because it reads what you type into these fields, such as names, addresses, phone numbers, email addresses and amounts, some stores describe the extension as *handling* personal and financial information and website content. That handling is the on-device conversion described above and nothing more; none of it is collected.</p>
 <h2>What the extension stores</h2>
 <p>Only your own settings, kept in your browser's extension storage:</p>
-<ul><li>Which conversion types you have enabled</li><li>The confidence threshold</li><li>Whether the undo notice is shown</li><li>Lists of sites where you have enabled or disabled the extension</li></ul>
+<ul><li>Which conversion types you have enabled</li><li>The confidence threshold</li><li>Whether the undo notice is shown</li><li>Which form helpers are switched on (naming rejected fields, checking before</li></ul>
+<p>proceeding, refilling a wiped form)</p>
+<ul><li>Lists of sites where you have enabled or disabled the extension</li></ul>
 <p>If your browser has extension sync turned on, your browser syncs these settings between your own devices using your browser account. That is your browser's sync, not ours — the extension author has no access to it and receives nothing.</p>
 <p>You can erase all of it at any time by removing the extension, or with <strong>Reset to defaults</strong> on the settings page.</p>
+<h3>Form recovery (off unless you turn it on)</h3>
+<p>Some sites empty the whole form when they reject it. If you switch on <strong>Offer to refill a wiped form</strong> in the settings, then each time you press a button such as 確認画面へ or 次へ, the extension keeps a copy of the fields you filled in, so it can offer them back if the site wipes them.</p>
+<ul><li><strong>Where:</strong> in that website's session storage, for that tab only. Not in the</li></ul>
+<p>extension's own storage, never synced, never sent anywhere.</p>
+<ul><li><strong>What is left out:</strong> passwords, payment card and bank details, one-time</li></ul>
+<p>codes, CAPTCHA answers, マイナンバー and hidden fields are never copied.</p>
+<ul><li><strong>How long:</strong> deleted when you restore it or dismiss the offer, after 30</li></ul>
+<p>minutes, when a page says your application is complete, or when you close the tab, whichever comes first.</p>
+<ul><li><strong>Who can see it:</strong> scripts running on that website, including any analytics</li></ul>
+<p>or advertising scripts it loads, can read session storage while the copy exists. They can already read the same values from the form itself, but the copy keeps them readable for up to 30 minutes after the site emptied the form. If that matters to you, leave this setting off.</p>
+<p>The setting is off by default.</p>
 <h2>What is never collected</h2>
-<p>To be explicit, the extension does <strong>not</strong> collect, transmit or store:</p>
+<p>To be explicit, the extension does <strong>not</strong> collect or transmit any of the following, and apart from the optional form recovery above, it does not store any of it either:</p>
 <ul><li>Anything you type into forms</li><li>Page contents, URLs or browsing history</li><li>Personal or identifying information</li><li>IP addresses</li><li>Analytics or usage statistics of any kind</li></ul>
 <h2>Permissions</h2>
 <table><thead><tr><th>Permission</th><th>Why</th></tr></thead><tbody><tr><td><code>storage</code></td><td>Saves your settings, described above. Nothing else.</td></tr><tr><td>Content script on all sites</td><td>Japanese forms are not limited to one domain, so the extension cannot know in advance which pages have them. It takes no action unless a page looks Japanese and a field identifies the width it needs.</td></tr></tbody></table>

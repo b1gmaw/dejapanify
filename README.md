@@ -114,6 +114,47 @@ A value is only split when the boundary is certain:
 
 Turn it off with **Fill split boxes** in the settings.
 
+### Form errors
+
+Many forms reject an application with nothing more than 「入力内容に誤りがあります」,
+and some only do it after a server round trip or a few seconds of script. When
+that happens, a small panel names the fields at fault and jumps to the first:
+
+```
+入力内容を確認してください（2件）
+  お名前 — 未入力
+  電話番号 — 電話番号の形式が正しくありません
+```
+
+Click a name to jump to its field. Each one drops off the list as you fix it.
+
+- **Before proceeding.** Pressing 確認画面へ, 次へ or 送信 with a required field
+  empty, or with a value the field's own `pattern` or `maxlength` rejects,
+  stops that one press and shows which field. Press again to go on anyway.
+  Width conversion runs first, so a value it fixes is never flagged.
+- **A late rejection.** For ten seconds after a proceed, any error the page puts
+  up is caught. A page that loads already showing errors, the usual answer from
+  a server, is treated the same way.
+- **Naming the field.** The page's own message is used where it gives one,
+  including a summary line such as 「電話番号の形式が正しくありません」, which is
+  matched to the field labelled 電話番号. If the page names nothing, the fields
+  that are certainly wrong (an empty 必須 field, say) are listed instead.
+
+Only the page's own markup counts: `required`, a 必須 marker, `aria-invalid`, an
+error class, or an error message shown beside a field. Static instructions such
+as 「※は必須項目です」 never trigger anything.
+
+**Refilling a wiped form** is a separate setting, **off by default**. Some sites
+empty the whole form when they reject it. With the setting on, pressing proceed
+keeps a copy of what you filled in, in that tab's session storage, and offers it
+back if the form comes back empty. It never copies passwords, payment details,
+one-time codes, CAPTCHA answers or マイナンバー. The copy is deleted once used or
+dismissed, after 30 minutes, on a page saying the application is complete, or
+when the tab closes. Scripts on that site can read the copy while it exists,
+which is why it is off unless you turn it on; see the
+[privacy policy](store/privacy.md). A form that posts to a different site
+cannot be refilled, since session storage belongs to one site.
+
 ### What it will never do
 
 - Touch `type="password"`, `hidden`, `file`, checkboxes, radios or date pickers.
@@ -200,6 +241,9 @@ specifically so the browser's native undo stack survives.
 | Show the undo chip | on | |
 | Convert while typing | **off** | Converts on each IME commit instead of on blur |
 | Fill split boxes | on | Spreads a pasted 姓 名 or phone number across split boxes |
+| Name the fields a form rejects | on | Lists them after a rejection and jumps to the first |
+| Check before proceeding | on | Stops one press when a field is certainly wrong |
+| Offer to refill a wiped form | **off** | Keeps a 30-minute copy in the tab's session storage |
 | Confidence threshold | 0.50 | Lower catches more fields, risks more mistakes |
 | Per-conversion switches | all on | Disable individual conversion types |
 | Block / allow lists | empty | Per-host, covers subdomains |
@@ -208,7 +252,7 @@ specifically so the browser's native undo stack survives.
 
 ```bash
 npm run dev        # watch build for both targets
-npm test           # 465 tests
+npm test           # 568 tests
 npm run typecheck
 npm run lint:ext   # web-ext lint over dist/firefox
 npm run package    # store-ready zips in web-ext-artifacts/
@@ -244,6 +288,7 @@ src/core/      pure logic, no DOM — fully unit tested
   pattern.ts     reads pattern attributes
   detect.ts      combines signals into one decision
   split.ts       where a pasted name or phone number divides across boxes
+  errors.ts      error wording, required markers, proceed buttons, pre-flight rules
 src/content/   DOM layer: descriptor extraction, IME-safe write-back, undo chip
 src/shared/    cross-browser storage shim
 src/popup/     toolbar popup
@@ -306,7 +351,7 @@ Width conversion is the first module. Other Japanese-web friction worth fixing:
 - [ ] Convert half-width katakana appearing anywhere it's clearly unintended
 - [ ] Suppress the 「Internet Explorer を推奨」 banners
 - [ ] Unblock paste on fields that disable it (common on email confirm fields)
-- [ ] Make required-field errors say which field
+- [x] Make form errors say which field, and jump to it
 
 Dropped:
 

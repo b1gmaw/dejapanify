@@ -32,6 +32,10 @@ export function setSettings(next: Settings): void {
   if (!settings.showIndicator) destroyIndicator();
 }
 
+export function currentSettings(): Settings {
+  return settings;
+}
+
 export function getStats(): { detected: number; converted: number } {
   return { detected: detectedCount, converted };
 }
