@@ -154,6 +154,13 @@ function rowIsMarked(r: Row): boolean {
   );
 }
 
+/** Has the page marked this field as wrong, or printed an error in its row? */
+export function isRejected(el: FormControl): boolean {
+  if (el.getAttribute('aria-invalid') === 'true' || hasErrorClass(el)) return true;
+  const row = formRowOf(el);
+  return hasErrorClass(row) || rowMessage(row) !== null;
+}
+
 /** Lines of a summary banner: its list items, else its text split at <br> and blocks. */
 function linesOf(el: Element): string[] {
   const items = Array.from(el.querySelectorAll('li'));

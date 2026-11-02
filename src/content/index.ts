@@ -3,7 +3,7 @@ import { looksJapanese } from '../core/hints.js';
 import { loadSettings, watchSettings, isEnabledForHost, hostMatches } from '../shared/settings.js';
 import { ext } from '../shared/browser.js';
 import { observeFields, type Observer } from './observer.js';
-import { considerField, setSettings, sweepAll, getStats } from './manager.js';
+import { considerField, offerProlongedFixes, setSettings, sweepAll, getStats } from './manager.js';
 import { destroyIndicator } from './indicator.js';
 import { destroyPanel } from './panel.js';
 import { bindProceed, checkPage, onSubmit } from './proceed.js';
@@ -46,7 +46,7 @@ const ACTIVE_MARKER = 'dejapanify';
 
 function start(): void {
   if (observer) return;
-  observer = observeFields(considerField);
+  observer = observeFields(considerField, offerProlongedFixes);
   try {
     document.documentElement.dataset[ACTIVE_MARKER] = 'active';
   } catch {
