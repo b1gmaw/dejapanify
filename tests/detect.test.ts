@@ -24,6 +24,38 @@ describe('the common Japanese form fields', () => {
     expect(d?.kind).toBe('hiragana');
   });
 
+  it.each([
+    ['user_kana1', 'せい'],
+    ['user_kana2', 'めい'],
+  ])('reads a box labelled in hiragana as hiragana: %s', (name, labelText) => {
+    // Gyoza no Osho's order form: the name says kana, the label shows the script.
+    const d = detectField({ name, labelText });
+    expect(d?.kind).toBe('hiragana');
+    expect(d!.confidence).toBeGreaterThanOrEqual(THRESHOLD);
+  });
+
+  it('reads the same label when it sits before the field instead of on it', () => {
+    expect(detectField({ name: 'user_kana1', localLabel: 'せい' })?.kind).toBe('hiragana');
+  });
+
+  it('lets a printed instruction outrank a hiragana label', () => {
+    const d = detectField({ name: 'user_kana1', labelText: 'せい', hintText: '全角カタカナ' });
+    expect(d?.kind).toBe('katakana-full');
+  });
+
+  it('does not take a longer word for a hiragana label', () => {
+    expect(detectField({ name: 'user_kana1', labelText: 'せいべつ' })?.kind).toBe('katakana-full');
+  });
+
+  it('prefers a ふりがな label over a kana field name', () => {
+    expect(detectField({ name: 'kana', labelText: 'ふりがな' })?.kind).toBe('hiragana');
+  });
+
+  it('keeps katakana when the label or the name is all there is', () => {
+    expect(detectField({ name: 'kana' })?.kind).toBe('katakana-full');
+    expect(detectField({ name: 'kana', labelText: 'フリガナ' })?.kind).toBe('katakana-full');
+  });
+
   it('detects a postal code and strips its hyphen', () => {
     const d = detectField({
       name: 'zip', labelText: '郵便番号', pattern: '^[0-9]{7}$', maxLength: 7,

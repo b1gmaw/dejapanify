@@ -12,7 +12,7 @@
 import { isConvertibleType, type FieldDescriptor } from '../core/detect.js';
 import { partRoleOf, splitName, splitPhone } from '../core/split.js';
 import type { PartRole, Settings } from '../core/types.js';
-import { describeField, isEditableField, isWritable, leadingTextFor, type EditableField } from './describe.js';
+import { describeField, isEditableField, isWritable, type EditableField } from './describe.js';
 import { isComposing, revertFieldValue, setFieldValue } from './applier.js';
 import { showNotice } from './indicator.js';
 
@@ -29,7 +29,7 @@ let filling = false;
 function roleOf(el: EditableField, descriptor?: FieldDescriptor): PartRole | null {
   let role = roles.get(el);
   if (role === undefined) {
-    role = partRoleOf({ ...(descriptor ?? describeField(el)), localLabel: leadingTextFor(el) }) ?? null;
+    role = partRoleOf(descriptor ?? describeField(el)) ?? null;
     roles.set(el, role);
   }
   return role;

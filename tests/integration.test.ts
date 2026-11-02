@@ -160,6 +160,120 @@ describe('conversion over the demo form', () => {
   });
 });
 
+/** Osho's ふりがな row as Material UI renders it: nothing but nested divs. */
+function muiRow(opts: { linked: boolean; label?: [string, string] }): void {
+  const [sei, mei] = opts.label ?? ['せい', 'めい'];
+  const box = (id: string, label: string) => `
+    <div class="box">
+      <div class="MuiFormControl-root">
+        <label ${opts.linked ? `for="${id}"` : ''}>${label}</label>
+        <div class="MuiInput-root"><input id="${id}" name="${id}" type="text"></div>
+      </div>
+    </div>`;
+  document.body.innerHTML = `<form><div class="in">${box('user_kana1', sei)}${box('user_kana2', mei)}</div></form>`;
+  setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
+  for (const el of collectFields(document)) considerField(el);
+}
+
+const field = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+/** Type into a field and leave it. */
+function enter(id: string, value: string): void {
+  field(id).value = value;
+  field(id).dispatchEvent(new Event('blur'));
+}
+
+function showError(id: string, message: string): void {
+  const span = document.createElement('span');
+  span.className = 'mdl-form-error-note';
+  span.textContent = message;
+  field(id).closest('.box')!.append(span);
+}
+
+describe('a Material UI form with no recognised containers', () => {
+  it.each([[true], [false]])('reads せい as hiragana (label linked: %s)', (linked) => {
+    muiRow({ linked });
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+    expect(field('user_kana1').dataset.dejapanifyKind).toBe('hiragana');
+  });
+
+  it('obeys a validation message that appears after the first blur', () => {
+    muiRow({ linked: true, label: ['姓', '名'] });
+    enter('user_kana1', 'やまだ');
+    expect(field('user_kana1').value).toBe('ヤマダ');
+
+    showError('user_kana1', '全角ひらがなで入力してください');
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+    expect(field('user_kana1').dataset.dejapanifyKind).toBe('hiragana');
+  });
+
+  it('stays hiragana after the message goes away', () => {
+    muiRow({ linked: true, label: ['姓', '名'] });
+    showError('user_kana1', '全角ひらがなで入力してください');
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+
+    // The site clears its error once the value passes; a later blur must not
+    // convert the value back and bring the error straight back.
+    document.querySelector('.mdl-form-error-note')!.remove();
+    enter('user_kana1', 'やまだ');
+    expect(field('user_kana1').value).toBe('やまだ');
+  });
+
+  it('starts converting a field once a late message identifies it', () => {
+    document.body.innerHTML = `<form><div class="row"><div><input id="plain" type="text"></div></div></form>`;
+    setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
+    for (const el of collectFields(document)) considerField(el);
+    enter('plain', 'ヤマダ');
+    expect(field('plain').value).toBe('ヤマダ');
+
+    const note = document.createElement('span');
+    note.textContent = '全角ひらがなで入力してください';
+    document.querySelector('.row')!.append(note);
+    enter('plain', 'ヤマダ');
+    expect(field('plain').value).toBe('やまだ');
+  });
+
+  it('does not borrow the note of another field in a larger form', () => {
+    document.body.innerHTML = `<div class="form">
+      <div><div><input id="a" type="text"></div></div>
+      <div><div><input id="b" type="text"></div><span>全角ひらがな</span></div>
+      <div><div><input id="c" type="text"></div></div>
+    </div>`;
+    expect(describeField(field('a')).hintText).not.toContain('全角ひらがな');
+    expect(describeField(field('b')).hintText).toContain('全角ひらがな');
+  });
+
+  it('keeps what it found when a re-render drops the label', () => {
+    muiRow({ linked: true });
+    document.querySelector('label[for="user_kana1"]')!.remove();
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+  });
+
+  it('never binds a payment field, and drops one that turns out to be', () => {
+    document.body.innerHTML = `<form>
+      <div><div><input id="card" name="cardnumber" type="text"></div></div>
+      <div class="late"><div><input id="late" name="tel" type="text"></div></div>
+    </form>`;
+    setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
+    for (const el of collectFields(document)) considerField(el);
+
+    enter('card', '１２３４');
+    expect(field('card').value).toBe('１２３４');
+
+    expect(field('late').dataset.dejapanifyKind).toBe('digits-half');
+    const note = document.createElement('span');
+    note.textContent = 'カード番号';
+    document.querySelector('.late')!.append(note);
+    enter('late', '０９０');
+    expect(field('late').value).toBe('０９０');
+    expect(field('late').dataset.dejapanifyKind).toBeUndefined();
+  });
+});
+
 describe('IME safety', () => {
   beforeEach(loadForm);
 
