@@ -150,6 +150,41 @@ export function normalizeProlongedMark(input: string, target: string = PROLONGED
   return out;
 }
 
+/**
+ * The kana that spells out a long vowel, by the sound before it. え段 and お段
+ * take the spelling names conventionally use: けいこ, そうま.
+ */
+const LONG_VOWELS: readonly (readonly [string, string])[] = [
+  ['あかがさざただなはばぱまやらわぁゃゎ', 'あ'],
+  ['いきぎしじちぢにひびぴみりぃ', 'い'],
+  ['うくぐすずつづぬふぶぷむゆるゔぅゅ', 'う'],
+  ['えけげせぜてでねへべぺめれぇ', 'い'],
+  ['おこごそぞとどのほぼぽもよろをぉょ', 'う'],
+];
+
+/**
+ * A likely spelling of hiragana text without ー: まー -> まあ, そーま -> そうま.
+ * Null when there is no ー, or one with no vowel before it to lengthen. This
+ * is a suggestion, not a conversion: おおの is a real name too, so the text is
+ * only ever changed if the user accepts.
+ */
+export function expandProlongedMark(input: string): string | null {
+  if (!input.includes(PROLONGED_SOUND_MARK)) return null;
+  let out = '';
+  let previous = '';
+  for (const ch of input) {
+    if (ch === PROLONGED_SOUND_MARK) {
+      const vowel = LONG_VOWELS.find(([sounds]) => sounds.includes(previous))?.[1];
+      if (!previous || !vowel) return null;
+      out += vowel;
+    } else {
+      out += ch;
+    }
+    previous = ch;
+  }
+  return out;
+}
+
 /** Normalize dash-likes to an ASCII hyphen. Used for phone/postal fields. */
 export function normalizeHyphen(input: string): string {
   let out = '';

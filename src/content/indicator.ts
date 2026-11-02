@@ -1,5 +1,6 @@
 /**
- * The small chip shown after a conversion: what changed, and an undo.
+ * The small chip shown after a conversion: what changed, and an undo. The same
+ * chip carries the rare suggestion the user has to accept.
  *
  * Rendered into a shadow root attached to a fixed-position host so that page
  * stylesheets cannot restyle it and page layout cannot clip it. Positioned
@@ -11,6 +12,8 @@ import type { EditableField } from './describe.js';
 
 const HOST_ID = 'dejapanify-indicator-host';
 const VISIBLE_MS = 4000;
+/** A suggestion has to be read and decided on, not just noticed. */
+const SUGGESTION_MS = 15000;
 
 const STYLE = `
 :host { all: initial; }
@@ -99,32 +102,49 @@ export function showConversion(el: EditableField, kind: FieldKind, onUndo: () =>
 
 /** Show the chip beside `el` with `text` and an undo button. */
 export function showNotice(el: EditableField, text: string, onUndo: () => void): void {
+  show(el, '✓', text, '⟲ 元に戻す', onUndo, VISIBLE_MS);
+}
+
+/** Show the chip beside `el` asking the user to accept a change. */
+export function showSuggestion(el: EditableField, text: string, accept: string, onAccept: () => void): void {
+  show(el, '?', text, accept, onAccept, SUGGESTION_MS);
+}
+
+function show(
+  el: EditableField,
+  mark: string,
+  text: string,
+  action: string,
+  onAction: () => void,
+  visibleMs: number,
+): void {
   if (!ensureRoot() || !chip) return;
 
   chip.textContent = '';
 
   const tick = document.createElement('span');
   tick.className = 'tick';
-  tick.textContent = '✓';
+  tick.textContent = mark;
 
   const label = document.createElement('span');
   label.className = 'label';
   label.textContent = text;
 
-  const undo = document.createElement('button');
-  undo.type = 'button';
-  undo.textContent = '⟲ 元に戻す';
-  undo.addEventListener('click', () => {
-    onUndo();
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = action;
+  button.addEventListener('click', () => {
+    // Hide first: the action may put up a chip of its own.
     hide();
+    onAction();
   });
 
-  chip.append(tick, label, undo);
+  chip.append(tick, label, button);
   position(el);
   chip.dataset.visible = 'true';
 
   window.clearTimeout(hideTimer);
-  hideTimer = window.setTimeout(hide, VISIBLE_MS);
+  hideTimer = window.setTimeout(hide, visibleMs);
 
   // Track the field while the chip is up so it does not float away on scroll.
   detach?.();

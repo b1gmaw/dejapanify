@@ -48,7 +48,11 @@ export interface Observer {
   rescan(): void;
 }
 
-export function observeFields(onField: (el: EditableField) => void): Observer {
+/**
+ * Calls `onField` for each field found, and `onChange` after every batch of
+ * page changes, which is how an error message appearing gets noticed.
+ */
+export function observeFields(onField: (el: EditableField) => void, onChange?: () => void): Observer {
   const scan = (root: ParentNode) => {
     for (const el of collectFields(root)) onField(el);
   };
@@ -63,6 +67,7 @@ export function observeFields(onField: (el: EditableField) => void): Observer {
     const roots = Array.from(pending);
     pending.clear();
     for (const root of roots) scan(root);
+    onChange?.();
   };
 
   const observer = new MutationObserver((records) => {
@@ -77,7 +82,8 @@ export function observeFields(onField: (el: EditableField) => void): Observer {
         pending.add(record.target as Element);
       }
     }
-    if (pending.size && timer === undefined) {
+    // Not just when there are roots to scan: an error can arrive as text alone.
+    if ((pending.size || onChange) && timer === undefined) {
       timer = window.setTimeout(flush, DEBOUNCE_MS);
     }
   });
@@ -86,7 +92,9 @@ export function observeFields(onField: (el: EditableField) => void): Observer {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['pattern', 'placeholder', 'aria-label', 'aria-describedby', 'type', 'name', 'autocomplete'],
+    attributeFilter: [
+      'pattern', 'placeholder', 'aria-label', 'aria-describedby', 'aria-invalid', 'type', 'name', 'autocomplete',
+    ],
   });
 
   return {

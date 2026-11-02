@@ -12,11 +12,13 @@
  * first attempt: 「全角ひらがなで入力してください」 doesn't exist until then.
  */
 import { detectField, isOffLimits, type FieldDescriptor } from '../core/detect.js';
+import { expandProlongedMark } from '../core/convert.js';
 import { normalizeValue, needsNormalization, optionsFor } from '../core/normalize.js';
 import type { Detection, Settings } from '../core/types.js';
 import { describeField, isEditableField, isWritable, type EditableField } from './describe.js';
 import { setFieldValue, revertFieldValue, markComposing, isComposing } from './applier.js';
-import { showConversion, destroyIndicator } from './indicator.js';
+import { isRejected } from './errors.js';
+import { showConversion, showNotice, showSuggestion, destroyIndicator } from './indicator.js';
 import { bindSplitPart } from './split.js';
 
 interface Bound {
@@ -27,6 +29,8 @@ interface Bound {
 
 const bound = new WeakMap<EditableField, Bound>();
 const seen = new WeakSet<EditableField>();
+/** The value each field was last offered a respelling for. */
+const offered = new WeakMap<EditableField, string>();
 let settings: Settings;
 let converted = 0;
 let detectedCount = 0;
@@ -61,7 +65,10 @@ export function considerField(el: EditableField): void {
     markComposing(el, false);
     if (settings.convertOnInput) convertField(el, 'input');
   });
-  el.addEventListener('blur', () => convertField(el, 'blur'));
+  el.addEventListener('blur', () => {
+    convertField(el, 'blur');
+    offerProlongedFix(el);
+  });
 
   refreshDetection(el, descriptor);
 }
@@ -146,6 +153,38 @@ export function convertField(el: EditableField, trigger: 'blur' | 'submit' | 'in
   }
 
   return true;
+}
+
+/**
+ * Some hiragana fields refuse ー, and there is no telling which until the page
+ * says so: a rule like /^[ぁ-ん]+$/ usually lives in the site's script. So this
+ * waits for the page to reject the value, then offers a respelling. It never
+ * applies one unasked, because the spelling of a name is the user's to decide.
+ */
+function offerProlongedFix(el: EditableField): void {
+  if (!settings.enabled || !settings.showIndicator) return;
+  if (bound.get(el)?.detection.kind !== 'hiragana') return;
+  if (isComposing(el) || !isWritable(el)) return;
+
+  const current = el.value;
+  if (offered.get(el) === current) return;
+  const respelled = expandProlongedMark(current);
+  if (!respelled || !isRejected(el)) return;
+
+  offered.set(el, current);
+  showSuggestion(el, `${respelled} に変更しますか？`, '変更する', () => {
+    // The user may have kept typing while the chip was up.
+    if (el.value !== current) return;
+    setFieldValue(el, respelled);
+    showNotice(el, `${respelled} に変更`, () => revertFieldValue(el, current));
+  });
+}
+
+/** Look again at every hiragana field, after the page has changed. */
+export function offerProlongedFixes(): void {
+  for (const el of Array.from(document.querySelectorAll('[data-dejapanify-kind="hiragana"]'))) {
+    if (isEditableField(el)) offerProlongedFix(el);
+  }
 }
 
 /** Convert every bound field inside a form. Used on submit. */
