@@ -14,7 +14,11 @@ import { isPaymentField, numberRoleOf, termMatches } from './keywords.js';
 import { phoneGroups } from './numbers.js';
 import type { PartRole } from './types.js';
 
-export type PartDescriptor = Partial<FieldDescriptor>;
+/** A descriptor plus the text printed immediately before the field. */
+export type PartDescriptor = Partial<FieldDescriptor> & {
+  /** e.g. the 「姓」 in 「姓 <input> 名 <input>」. */
+  localLabel?: string;
+};
 
 /**
  * Split a phone number across boxes of the given maxlengths (0 or less for
@@ -90,17 +94,6 @@ const KANA_ATTR = /kana|furigana|yomi|phonetic|ruby/;
  * label; anything left over, such as the 会社 in 会社名, means it isn't one.
  */
 const LABEL_NOISE = /お名前|名前|氏名|全角|半角|必須|任意|入力|[\s　:：*＊※()（）［］[\]【】「」・/／]/g;
-
-const HIRAGANA_LABELS = new Set(['せい', 'めい', 'みょうじ']);
-
-/**
- * Is this label a 姓 or 名 spelled in hiragana? A form that writes the box's own
- * label as 「せい」 is showing the script it wants. The whole label has to be
- * that word, so せいべつ and めいれい don't count.
- */
-export function asksForHiragana(text: string): boolean {
-  return HIRAGANA_LABELS.has(text.replace(LABEL_NOISE, ''));
-}
 
 /** 'family' or 'given' from one label, with whether it asked for kana. */
 function labelRole(text: string): { half: 'family' | 'given'; kana: boolean } | null {

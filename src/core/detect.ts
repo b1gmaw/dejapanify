@@ -9,7 +9,6 @@ import { parseHintText, type HintResult } from './hints.js';
 import { analyzePattern } from './pattern.js';
 import { exampleFor } from './example.js';
 import { matchKeywords, isPaymentField, numberRoleOf, AUTOCOMPLETE_MAP, INPUT_TYPE_MAP } from './keywords.js';
-import { asksForHiragana } from './split.js';
 import type {
   Detection,
   FieldKind,
@@ -35,8 +34,6 @@ export interface FieldDescriptor {
   className: string;
   /** Text of the associated <label>. */
   labelText: string;
-  /** Text printed directly before the field, e.g. the 「姓」 in 「姓 <input>」. */
-  localLabel: string;
   /** Nearby note/hint text: aria-describedby, sibling nodes, table cell. */
   hintText: string;
   /** Current value, used only to break ties. */
@@ -67,7 +64,6 @@ export const EMPTY_DESCRIPTOR: FieldDescriptor = {
   maxLength: -1,
   className: '',
   labelText: '',
-  localLabel: '',
   hintText: '',
 };
 
@@ -144,11 +140,6 @@ export function detectField(descriptor: Partial<FieldDescriptor>): Detection | n
     if (!hint.kind && hint.letterCase) {
       signals.push({ source: 'hint-text', kind: 'alnum-half', confidence: 0.9, evidence: 'hint: letter case' });
     }
-  }
-  // A box labelled 「せい」 shows the script it wants, which outweighs a field
-  // name like user_kana1 but not a printed 全角カタカナ.
-  if (asksForHiragana(d.labelText) || asksForHiragana(d.localLabel)) {
-    signals.push({ source: 'hint-text', kind: 'hiragana', confidence: 0.9, evidence: 'hint: label written in hiragana' });
   }
 
   // --- 3. autocomplete ------------------------------------------------------

@@ -211,7 +211,6 @@ export function describeField(el: EditableField): FieldDescriptor {
     maxLength: el.maxLength ?? -1,
     className: typeof el.className === 'string' ? el.className : '',
     labelText: labelTextFor(el),
-    localLabel: leadingTextFor(el),
     hintText: hintTextFor(el),
     value: el.value,
   };

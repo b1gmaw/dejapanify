@@ -160,17 +160,30 @@ describe('conversion over the demo form', () => {
   });
 });
 
-/** Osho's ふりがな row as Material UI renders it: nothing but nested divs. */
-function muiRow(opts: { linked: boolean; label?: [string, string] }): void {
-  const [sei, mei] = opts.label ?? ['せい', 'めい'];
-  const box = (id: string, label: string) => `
+const OSHO_NOTE = '姓名の読み仮名をひらがなでご入力ください';
+
+/**
+ * Osho's guest order form as rendered at order_guest_entry.html: nothing but
+ * nested divs, with the instruction under the second box. Its two 姓 名 boxes
+ * come first, and the form holds seven fields in all.
+ */
+function muiRow(opts: { linked: boolean; note?: boolean }): void {
+  const box = (id: string, label: string, extra = '') => `
     <div class="box">
       <div class="MuiFormControl-root">
         <label ${opts.linked ? `for="${id}"` : ''}>${label}</label>
-        <div class="MuiInput-root"><input id="${id}" name="${id}" type="text"></div>
+        <div class="MuiInputBase-root"><input id="${id}" name="${id}" type="text"></div>
       </div>
+      ${extra}
     </div>`;
-  document.body.innerHTML = `<form><div class="in">${box('user_kana1', sei)}${box('user_kana2', mei)}</div></form>`;
+  const note = opts.note === false ? '' : `<span class="helper-text-span">${OSHO_NOTE}</span>`;
+  document.body.innerHTML = `<form>
+    <section><div class="in">${box('user_name1', '姓')}${box('user_name2', '名')}</div></section>
+    <section class="furigana-padding"><div class="in">${box('user_kana1', 'せい')}${box('user_kana2', 'めい', note)}</div></section>
+    ${box('user_tel', '電話番号（ハイフンなし）')}
+    ${box('user_email', 'メールアドレス')}
+    ${box('user_email_confirm', 'メールアドレス（確認用）')}
+  </form>`;
   setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
   for (const el of collectFields(document)) considerField(el);
 }
@@ -191,15 +204,32 @@ function showError(id: string, message: string): void {
 }
 
 describe('a Material UI form with no recognised containers', () => {
-  it.each([[true], [false]])('reads せい as hiragana (label linked: %s)', (linked) => {
+  it.each([
+    ['user_kana1', true],
+    ['user_kana2', true],
+    ['user_kana1', false],
+    ['user_kana2', false],
+  ])('applies the printed note to %s (label linked: %s)', (id, linked) => {
     muiRow({ linked });
-    enter('user_kana1', 'ヤマダ');
-    expect(field('user_kana1').value).toBe('やまだ');
-    expect(field('user_kana1').dataset.dejapanifyKind).toBe('hiragana');
+    expect(describeField(field(id)).hintText).toContain(OSHO_NOTE);
+    enter(id, 'ヤマダ');
+    expect(field(id).value).toBe('やまだ');
+    expect(field(id).dataset.dejapanifyKind).toBe('hiragana');
+  });
+
+  it('does not give the note to the 姓 名 boxes above it', () => {
+    muiRow({ linked: true });
+    expect(describeField(field('user_name1')).hintText).not.toContain(OSHO_NOTE);
+  });
+
+  it('does not guess hiragana from a label when the page says nothing', () => {
+    muiRow({ linked: true, note: false });
+    enter('user_kana1', 'やまだ');
+    expect(field('user_kana1').value).toBe('ヤマダ');
   });
 
   it('obeys a validation message that appears after the first blur', () => {
-    muiRow({ linked: true, label: ['姓', '名'] });
+    muiRow({ linked: true, note: false });
     enter('user_kana1', 'やまだ');
     expect(field('user_kana1').value).toBe('ヤマダ');
 
@@ -210,7 +240,7 @@ describe('a Material UI form with no recognised containers', () => {
   });
 
   it('stays hiragana after the message goes away', () => {
-    muiRow({ linked: true, label: ['姓', '名'] });
+    muiRow({ linked: true, note: false });
     showError('user_kana1', '全角ひらがなで入力してください');
     enter('user_kana1', 'ヤマダ');
     expect(field('user_kana1').value).toBe('やまだ');
@@ -246,9 +276,9 @@ describe('a Material UI form with no recognised containers', () => {
     expect(describeField(field('b')).hintText).toContain('全角ひらがな');
   });
 
-  it('keeps what it found when a re-render drops the label', () => {
+  it('keeps what it found when a re-render drops the note', () => {
     muiRow({ linked: true });
-    document.querySelector('label[for="user_kana1"]')!.remove();
+    document.querySelector('.helper-text-span')!.remove();
     enter('user_kana1', 'ヤマダ');
     expect(field('user_kana1').value).toBe('やまだ');
   });
