@@ -24,6 +24,26 @@ describe('the common Japanese form fields', () => {
     expect(d?.kind).toBe('hiragana');
   });
 
+  it('follows the sentence a form prints, whatever the field is called', () => {
+    // Gyoza no Osho's guest order form, word for word.
+    const d = detectField({
+      name: 'user_kana1',
+      labelText: 'せい',
+      hintText: 'せい めい 姓名の読み仮名をひらがなでご入力ください',
+    });
+    expect(d?.kind).toBe('hiragana');
+    expect(d!.confidence).toBeGreaterThanOrEqual(THRESHOLD);
+  });
+
+  it('prefers a ふりがな label over a kana field name', () => {
+    expect(detectField({ name: 'kana', labelText: 'ふりがな' })?.kind).toBe('hiragana');
+  });
+
+  it('keeps katakana when the label or the name is all there is', () => {
+    expect(detectField({ name: 'kana' })?.kind).toBe('katakana-full');
+    expect(detectField({ name: 'kana', labelText: 'フリガナ' })?.kind).toBe('katakana-full');
+  });
+
   it('detects a postal code and strips its hyphen', () => {
     const d = detectField({
       name: 'zip', labelText: '郵便番号', pattern: '^[0-9]{7}$', maxLength: 7,

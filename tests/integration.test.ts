@@ -160,6 +160,150 @@ describe('conversion over the demo form', () => {
   });
 });
 
+const OSHO_NOTE = '姓名の読み仮名をひらがなでご入力ください';
+
+/**
+ * Osho's guest order form as rendered at order_guest_entry.html: nothing but
+ * nested divs, with the instruction under the second box. Its two 姓 名 boxes
+ * come first, and the form holds seven fields in all.
+ */
+function muiRow(opts: { linked: boolean; note?: boolean }): void {
+  const box = (id: string, label: string, extra = '') => `
+    <div class="box">
+      <div class="MuiFormControl-root">
+        <label ${opts.linked ? `for="${id}"` : ''}>${label}</label>
+        <div class="MuiInputBase-root"><input id="${id}" name="${id}" type="text"></div>
+      </div>
+      ${extra}
+    </div>`;
+  const note = opts.note === false ? '' : `<span class="helper-text-span">${OSHO_NOTE}</span>`;
+  document.body.innerHTML = `<form>
+    <section><div class="in">${box('user_name1', '姓')}${box('user_name2', '名')}</div></section>
+    <section class="furigana-padding"><div class="in">${box('user_kana1', 'せい')}${box('user_kana2', 'めい', note)}</div></section>
+    ${box('user_tel', '電話番号（ハイフンなし）')}
+    ${box('user_email', 'メールアドレス')}
+    ${box('user_email_confirm', 'メールアドレス（確認用）')}
+  </form>`;
+  setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
+  for (const el of collectFields(document)) considerField(el);
+}
+
+const field = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+/** Type into a field and leave it. */
+function enter(id: string, value: string): void {
+  field(id).value = value;
+  field(id).dispatchEvent(new Event('blur'));
+}
+
+function showError(id: string, message: string): void {
+  const span = document.createElement('span');
+  span.className = 'mdl-form-error-note';
+  span.textContent = message;
+  field(id).closest('.box')!.append(span);
+}
+
+describe('a Material UI form with no recognised containers', () => {
+  it.each([
+    ['user_kana1', true],
+    ['user_kana2', true],
+    ['user_kana1', false],
+    ['user_kana2', false],
+  ])('applies the printed note to %s (label linked: %s)', (id, linked) => {
+    muiRow({ linked });
+    expect(describeField(field(id)).hintText).toContain(OSHO_NOTE);
+    enter(id, 'ヤマダ');
+    expect(field(id).value).toBe('やまだ');
+    expect(field(id).dataset.dejapanifyKind).toBe('hiragana');
+  });
+
+  it('does not give the note to the 姓 名 boxes above it', () => {
+    muiRow({ linked: true });
+    expect(describeField(field('user_name1')).hintText).not.toContain(OSHO_NOTE);
+  });
+
+  it('does not guess hiragana from a label when the page says nothing', () => {
+    muiRow({ linked: true, note: false });
+    enter('user_kana1', 'やまだ');
+    expect(field('user_kana1').value).toBe('ヤマダ');
+  });
+
+  it('obeys a validation message that appears after the first blur', () => {
+    muiRow({ linked: true, note: false });
+    enter('user_kana1', 'やまだ');
+    expect(field('user_kana1').value).toBe('ヤマダ');
+
+    showError('user_kana1', '全角ひらがなで入力してください');
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+    expect(field('user_kana1').dataset.dejapanifyKind).toBe('hiragana');
+  });
+
+  it('stays hiragana after the message goes away', () => {
+    muiRow({ linked: true, note: false });
+    showError('user_kana1', '全角ひらがなで入力してください');
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+
+    // The site clears its error once the value passes; a later blur must not
+    // convert the value back and bring the error straight back.
+    document.querySelector('.mdl-form-error-note')!.remove();
+    enter('user_kana1', 'やまだ');
+    expect(field('user_kana1').value).toBe('やまだ');
+  });
+
+  it('starts converting a field once a late message identifies it', () => {
+    document.body.innerHTML = `<form><div class="row"><div><input id="plain" type="text"></div></div></form>`;
+    setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
+    for (const el of collectFields(document)) considerField(el);
+    enter('plain', 'ヤマダ');
+    expect(field('plain').value).toBe('ヤマダ');
+
+    const note = document.createElement('span');
+    note.textContent = '全角ひらがなで入力してください';
+    document.querySelector('.row')!.append(note);
+    enter('plain', 'ヤマダ');
+    expect(field('plain').value).toBe('やまだ');
+  });
+
+  it('does not borrow the note of another field in a larger form', () => {
+    document.body.innerHTML = `<div class="form">
+      <div><div><input id="a" type="text"></div></div>
+      <div><div><input id="b" type="text"></div><span>全角ひらがな</span></div>
+      <div><div><input id="c" type="text"></div></div>
+    </div>`;
+    expect(describeField(field('a')).hintText).not.toContain('全角ひらがな');
+    expect(describeField(field('b')).hintText).toContain('全角ひらがな');
+  });
+
+  it('keeps what it found when a re-render drops the note', () => {
+    muiRow({ linked: true });
+    document.querySelector('.helper-text-span')!.remove();
+    enter('user_kana1', 'ヤマダ');
+    expect(field('user_kana1').value).toBe('やまだ');
+  });
+
+  it('never binds a payment field, and drops one that turns out to be', () => {
+    document.body.innerHTML = `<form>
+      <div><div><input id="card" name="cardnumber" type="text"></div></div>
+      <div class="late"><div><input id="late" name="tel" type="text"></div></div>
+    </form>`;
+    setSettings({ ...DEFAULT_SETTINGS, showIndicator: false });
+    for (const el of collectFields(document)) considerField(el);
+
+    enter('card', '１２３４');
+    expect(field('card').value).toBe('１２３４');
+
+    expect(field('late').dataset.dejapanifyKind).toBe('digits-half');
+    const note = document.createElement('span');
+    note.textContent = 'カード番号';
+    document.querySelector('.late')!.append(note);
+    enter('late', '０９０');
+    expect(field('late').value).toBe('０９０');
+    expect(field('late').dataset.dejapanifyKind).toBeUndefined();
+  });
+});
+
 describe('IME safety', () => {
   beforeEach(loadForm);
 

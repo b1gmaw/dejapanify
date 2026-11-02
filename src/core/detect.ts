@@ -78,17 +78,24 @@ export function isConvertibleType(type: string): boolean {
   return !UNSAFE_TYPES.has(type.toLowerCase());
 }
 
-export function detectField(descriptor: Partial<FieldDescriptor>): Detection | null {
+/**
+ * Fields the extension must leave entirely alone: unsafe input types, and
+ * payment and banking fields, which are excluded before any scoring so that no
+ * combination of other signals (a 「半角数字」 hint, a digits pattern) can talk
+ * the extension into touching a card or account number.
+ */
+export function isOffLimits(descriptor: Partial<FieldDescriptor>): boolean {
   const d: FieldDescriptor = { ...EMPTY_DESCRIPTOR, ...descriptor };
-  if (!isConvertibleType(d.type)) return null;
-
-  // Payment and banking fields are excluded outright, before any scoring, so
-  // no combination of other signals (a 「半角数字」 hint, a digits pattern) can
-  // talk the extension into touching a card or account number.
+  if (!isConvertibleType(d.type)) return true;
   const identifying = [d.name, d.id, d.className, d.labelText, d.placeholder, d.ariaLabel, d.hintText]
     .filter(Boolean)
     .join(' ');
-  if (isPaymentField(identifying, d.autocomplete)) return null;
+  return isPaymentField(identifying, d.autocomplete);
+}
+
+export function detectField(descriptor: Partial<FieldDescriptor>): Detection | null {
+  const d: FieldDescriptor = { ...EMPTY_DESCRIPTOR, ...descriptor };
+  if (isOffLimits(d)) return null;
 
   const signals: Signal[] = [];
   let expectedDigits: number | undefined;

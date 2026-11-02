@@ -2,6 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { normalizeValue, needsNormalization } from '../src/core/normalize.js';
 import type { FieldKind } from '../src/core/types.js';
 
+describe('the prolonged sound mark in a hiragana field', () => {
+  it('is left in place', () => {
+    expect(normalizeValue('ヤマダー', 'hiragana')).toBe('やまだー');
+  });
+});
+
 describe('normalizeValue per field kind', () => {
   const cases: [FieldKind, string, string, string][] = [
     ['katakana-full', 'やまだ ﾀﾛｳ', 'ヤマダ　タロウ', 'mixed hiragana + half-width kana -> full-width katakana'],

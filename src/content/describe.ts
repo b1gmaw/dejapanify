@@ -17,6 +17,11 @@ export type FormControl = EditableField | HTMLSelectElement;
  */
 const MAX_HINT_CHARS = 240;
 
+/** How far to climb a form built from plain divs when looking for its row. */
+const MAX_ROW_DEPTH = 6;
+/** A 姓/名 pair can share one note; three fields is no longer one row. */
+const MAX_ROW_FIELDS = 2;
+
 export function isEditableField(node: unknown): node is EditableField {
   return (
     node instanceof HTMLInputElement ||
@@ -74,9 +79,30 @@ function hintTextFor(el: EditableField): string {
   if (container) {
     parts.push(textExcludingFields(container));
     parts.push(rowHeaderFor(el));
+  } else {
+    parts.push(divRowText(el));
   }
 
   return clean(parts.join(' ')).slice(0, MAX_HINT_CHARS);
+}
+
+/**
+ * The text of a form row built from plain divs, as component libraries render
+ * them. Takes the outermost ancestor that is still one row, not the nearest
+ * with any text: that is usually just the field's own label, with the note or
+ * error message a level or two above it.
+ */
+function divRowText(el: Element): string {
+  let text = '';
+  let node = el.parentElement;
+  for (let depth = 0; node && depth < MAX_ROW_DEPTH; depth++, node = node.parentElement) {
+    if (node.matches('form, body')) break;
+    if (node.querySelectorAll('input, textarea, select').length > MAX_ROW_FIELDS) break;
+    const own = clean(textExcludingFields(node));
+    if (own.length > MAX_HINT_CHARS) break;
+    if (own) text = own;
+  }
+  return text;
 }
 
 /**

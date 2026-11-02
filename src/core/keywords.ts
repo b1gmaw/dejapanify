@@ -27,26 +27,32 @@ export interface KeywordRule {
 }
 
 /**
- * Order matters: katakana rules are checked before the generic name rules so
- * that a field labelled 「お名前（フリガナ）」 is treated as a kana field, not a
- * plain name field.
+ * Order matters: kana rules are checked before the generic name rules so that
+ * a field labelled 「お名前（フリガナ）」 is treated as a kana field, not a plain
+ * name field. Among the kana rules, what the page shows comes before the
+ * attribute names: a field named "kana" and labelled 「ふりがな」 wants hiragana,
+ * since "kana" is what developers call either script.
  */
 export const KEYWORD_RULES: readonly KeywordRule[] = [
   {
     kind: 'katakana-full',
     confidence: 0.85,
-    terms: [
-      'フリガナ', 'ﾌﾘｶﾞﾅ', 'カナ', 'ｶﾅ', 'カタカナ',
-      'furigana', 'katakana', 'kana', 'phonetic', 'ruby',
-      'sei_kana', 'mei_kana', 'kana_sei', 'kana_mei',
-      'name_kana', 'kana_name', 'lastname_kana', 'firstname_kana',
-      /\bkana\d?\b/, /_kana(_|\b)/, /kana_/,
-    ],
+    terms: ['フリガナ', 'ﾌﾘｶﾞﾅ', 'カナ', 'ｶﾅ', 'カタカナ'],
   },
   {
     kind: 'hiragana',
     confidence: 0.85,
     terms: ['ふりがな', 'ひらがな', 'hiragana', 'yomigana', 'よみがな', '読み仮名'],
+  },
+  {
+    kind: 'katakana-full',
+    confidence: 0.85,
+    terms: [
+      'furigana', 'katakana', 'kana', 'phonetic', 'ruby',
+      'sei_kana', 'mei_kana', 'kana_sei', 'kana_mei',
+      'name_kana', 'kana_name', 'lastname_kana', 'firstname_kana',
+      /\bkana\d?\b/, /_kana(_|\b)/, /kana_/,
+    ],
   },
   {
     kind: 'digits-half',
